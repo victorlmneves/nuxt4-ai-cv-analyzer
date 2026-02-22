@@ -1,0 +1,120 @@
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;1,9..144,300&family=DM+Mono:wght@300;400&family=DM+Sans:wght@300;400;500&display=swap');
+
+:root {
+    --ink: #0f0e0d;
+    --ink-soft: #3d3a36;
+    --ink-muted: #8a847c;
+    --paper: #f7f5f0;
+    --paper-warm: #ede9e1;
+    --paper-dark: #e2ddd5;
+    --accent: #c8602a;
+    --accent-pale: #f5ede6;
+    --green: #2d6a4f;
+    --green-pale: #e8f4ee;
+    --amber: #b45309;
+    --amber-pale: #fef3c7;
+    --red: #b91c1c;
+    --red-pale: #fef2f2;
+    --blue: #1d4ed8;
+    --blue-pale: #eff6ff;
+    --radius: 3px;
+    --shadow: 0 1px 3px rgba(15, 14, 13, 0.08), 0 4px 16px rgba(15, 14, 13, 0.04);
+    --shadow-lg: 0 2px 8px rgba(15, 14, 13, 0.12), 0 12px 40px rgba(15, 14, 13, 0.08);
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    background-color: var(--paper);
+    color: var(--ink);
+    min-height: 100vh;
+    line-height: 1.6;
+}
+
+/* ── Scrollbar ─────────────────────────────────────────── */
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--paper-warm);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--paper-dark);
+    border-radius: 3px;
+}
+
+/* ── Typography ────────────────────────────────────────── */
+.font-serif {
+    font-family: 'Fraunces', serif;
+}
+
+.font-mono {
+    font-family: 'DM Mono', monospace;
+}
+
+/* ── Animations ────────────────────────────────────────── */
+@keyframes fadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: -200% center;
+    }
+
+    100% {
+        background-position: 200% center;
+    }
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.4;
+    }
+}
+
+.animate-fade-up {
+    animation: fadeUp 0.4s ease both;
+}
+
+.animate-fade-in {
+    animation: fadeIn 0.3s ease both;
+}

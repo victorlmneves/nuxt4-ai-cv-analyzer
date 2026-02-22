@@ -1,22 +1,26 @@
 <script setup lang="ts">
 import { useAnalyser } from '~/composables/useAnalyser';
-import type { TProvider, IHistoryEntry, ISkill, TQuestionCategory } from '~/composables/types';
+import type { TProvider, IHistoryEntry, ISkill, TQuestionCategory } from '~/types';
 
 // ── Composable ────────────────────────────────────────────────────────────────
 const {
     result,
     isLoading,
+    isHistoryLoading,
     error,
     progress,
     history,
     analyse,
+    loadAnalysis,
     reset,
-    restoreFromHistory,
     deleteFromHistory,
     clearHistory,
     providerLabel,
     fitScoreColor,
 } = useAnalyser();
+
+// ── Auth ──────────────────────────────────────────────────────────────────────
+const { user } = useUserSession();
 
 // ── Input state ───────────────────────────────────────────────────────────────
 const cvText = ref('');
@@ -166,9 +170,9 @@ function techStackEntries(): [string, ISkill[]][] {
     return Object.entries(result.value.techStack).filter(([, skills]) => skills.length > 0) as [string, ISkill[]][];
 }
 
-function loadEntry(entry: IHistoryEntry): void {
-    restoreFromHistory(entry);
+async function loadEntry(entry: IHistoryEntry): Promise<void> {
     showHistory.value = false;
+    await loadAnalysis(entry.id);
 }
 </script>
 
@@ -184,6 +188,10 @@ function loadEntry(entry: IHistoryEntry): void {
                 </div>
 
                 <nav class="header-nav">
+                    <NuxtLink v-if="user?.role === 'admin'" to="/admin" class="nav-btn">
+                        ▤ Admin
+                    </NuxtLink>
+
                     <button
                         class="nav-btn"
                         :class="{ active: showHistory }"
@@ -192,6 +200,11 @@ function loadEntry(entry: IHistoryEntry): void {
                         History
                         <span v-if="history.length > 0" class="badge">{{ history.length }}</span>
                     </button>
+
+                    <div class="user-chip">
+                        <span class="user-name">{{ user?.name?.split(' ')[0] }}</span>
+                        <a href="/auth/logout" class="signout-btn" title="Sign out">⎋</a>
+                    </div>
                 </nav>
             </div>
         </header>
@@ -210,7 +223,14 @@ function loadEntry(entry: IHistoryEntry): void {
                     </div>
                 </div>
 
-                <div v-if="history.length === 0" class="sidebar-empty">
+                <div v-if="isHistoryLoading" class="sidebar-loading">
+                    <div v-for="i in 3" :key="i" class="skeleton-row">
+                        <div class="skeleton skeleton-name" />
+                        <div class="skeleton skeleton-meta" />
+                    </div>
+                </div>
+
+                <div v-else-if="history.length === 0" class="sidebar-empty">
                     <p>No analyses yet.</p>
                 </div>
 
@@ -229,9 +249,9 @@ function loadEntry(entry: IHistoryEntry): void {
                         <div class="history-item-meta">
                             <span
                                 class="score-pill font-mono"
-                                :style="{ color: fitScoreColor(entry.result.fitScore.overall) }"
+                                :style="{ color: fitScoreColor(entry.overallScore) }"
                             >
-                                {{ entry.result.fitScore.overall }}%
+                                {{ entry.overallScore }}%
                             </span>
                             <span class="history-date font-mono">{{ formatDate(entry.createdAt) }}</span>
                             <button
@@ -767,6 +787,62 @@ function loadEntry(entry: IHistoryEntry): void {
 
 .close-btn:hover {
     color: var(--ink);
+}
+
+.user-chip {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.3rem 0.75rem;
+    border: 1px solid var(--paper-dark);
+    border-radius: var(--radius);
+    background: var(--paper-warm);
+}
+
+.user-name {
+    font-size: 0.8rem;
+    color: var(--ink-soft);
+}
+
+.signout-btn {
+    font-size: 0.85rem;
+    color: var(--ink-muted);
+    text-decoration: none;
+    line-height: 1;
+    transition: color 0.15s;
+}
+
+.signout-btn:hover {
+    color: var(--red);
+}
+
+.sidebar-loading {
+    padding: 0.5rem 0;
+}
+
+.skeleton-row {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--paper-warm);
+}
+
+.skeleton {
+    border-radius: var(--radius);
+    background: linear-gradient(90deg, var(--paper-warm) 25%, var(--paper-dark) 50%, var(--paper-warm) 75%);
+    background-size: 200% auto;
+    animation: shimmer 1.4s linear infinite;
+}
+
+.skeleton-name {
+    height: 13px;
+    width: 70%;
+}
+
+.skeleton-meta {
+    height: 10px;
+    width: 45%;
 }
 
 .sidebar-empty {

@@ -1,68 +1,56 @@
-import type { IAnalysisInput, IAnalysisResult, IHistoryEntry, TProvider } from './types';
-
-// ── Constants ─────────────────────────────────────────────────────────────────
-const HISTORY_KEY = 'cv-analyzer:history';
-const MAX_HISTORY = 20;
+import type { IAnalysisInput, IAnalysisResult, IHistoryEntry, TProvider } from '../types';
 
 // ── State ─────────────────────────────────────────────────────────────────────
 const result = ref<IAnalysisResult | null>(null);
 const isLoading = ref(false);
+const isHistoryLoading = ref(false);
 const error = ref<string | null>(null);
 const progress = ref(0);
 const history = ref<IHistoryEntry[]>([]);
 
-// ── History helpers ───────────────────────────────────────────────────────────
-function loadHistory(): void {
-    if (typeof window === 'undefined') {
-        return;
-    }
+// ── History — backed by Supabase via Drizzle API routes ───────────────────────
+async function loadHistory(): Promise<void> {
+    isHistoryLoading.value = true;
 
     try {
-        const raw = localStorage.getItem(HISTORY_KEY);
+        const rows = await $fetch<IHistoryEntry[]>('/api/analyses');
 
-        history.value = raw ? (JSON.parse(raw) as IHistoryEntry[]) : [];
-    } catch {
+        history.value = rows;
+    } catch (err) {
+        console.error('[history] load failed:', err);
+
         history.value = [];
+    } finally {
+        isHistoryLoading.value = false;
     }
 }
 
-function saveHistory(): void {
-    if (typeof window === 'undefined') {
-        return;
+async function deleteFromHistory(id: string): Promise<void> {
+    try {
+        await $fetch(`/api/analyses/${id}`, { method: 'DELETE' });
+
+        history.value = history.value.filter((e) => e.id !== id);
+    } catch (err) {
+        console.error('[history] delete failed:', err);
     }
-
-    localStorage.setItem(HISTORY_KEY, JSON.stringify(history.value));
 }
 
-function addToHistory(entry: IHistoryEntry): void {
-    history.value.unshift(entry);
+async function clearHistory(): Promise<void> {
+    // Archive all visible entries in parallel
+    await Promise.allSettled(
+        history.value.map((e) => $fetch(`/api/analyses/${e.id}`, { method: 'DELETE' })),
+    );
 
-    if (history.value.length > MAX_HISTORY) {
-        history.value = history.value.slice(0, MAX_HISTORY);
-    }
-
-    saveHistory();
-}
-
-function deleteFromHistory(id: string): void {
-    history.value = history.value.filter((e) => e.id !== id);
-    saveHistory();
-}
-
-function clearHistory(): void {
     history.value = [];
-    saveHistory();
 }
 
 // ── Progress simulation ───────────────────────────────────────────────────────
-// Simulates progress while waiting for the API response
 let progressTimer: ReturnType<typeof setInterval> | null = null;
 
 function startProgress(): void {
     progress.value = 0;
     progressTimer = setInterval(() => {
         if (progress.value < 85) {
-            // Slow down as it approaches 85%
             const increment = progress.value < 40 ? 3 : progress.value < 70 ? 1.5 : 0.5;
 
             progress.value = Math.min(85, progress.value + increment);
@@ -104,16 +92,24 @@ async function analyse(input: IAnalysisInput): Promise<void> {
         finishProgress();
         result.value = response;
 
-        // Persist to history
+        // Optimistically prepend the summary row to history
+        // The full result is already in `result` for the current view
         const entry: IHistoryEntry = {
-            id: `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
-            result: response,
+            id: (response as IAnalysisResult & { id?: string }).id ?? '',
             candidateName: response.candidate.name ?? 'Unknown Candidate',
+            candidateRole: response.candidate.currentRole ?? null,
             roleName: extractRoleName(input.jobDescription),
-            createdAt: new Date().toISOString(),
+            overallScore: response.fitScore.overall,
+            technicalScore: response.fitScore.technical,
+            experienceScore: response.fitScore.experience,
+            softSkillsScore: response.fitScore.softSkills,
+            verdict: response.fitScore.verdict,
+            redFlagCount: response.redFlags.length,
+            provider: response.provider,
+            createdAt: response.analysedAt,
         };
 
-        addToHistory(entry);
+        history.value.unshift(entry);
     } catch (err: unknown) {
         finishProgress();
 
@@ -127,8 +123,23 @@ async function analyse(input: IAnalysisInput): Promise<void> {
     }
 }
 
+// ── Load a full analysis from the API ─────────────────────────────────────────
+async function loadAnalysis(id: string): Promise<void> {
+    isLoading.value = true;
+    error.value = null;
+
+    try {
+        const row = await $fetch<{ result: IAnalysisResult }>(`/api/analyses/${id}`);
+
+        result.value = row.result;
+    } catch (err) {
+        error.value = err instanceof Error ? err.message : 'Failed to load analysis.';
+    } finally {
+        isLoading.value = false;
+    }
+}
+
 // ── Helpers ───────────────────────────────────────────────────────────────────
-// Extracts a short role name from the job description (first line or first 40 chars)
 function extractRoleName(jd: string): string {
     if (!jd.trim()) {
         return 'Unknown Role';
@@ -139,17 +150,12 @@ function extractRoleName(jd: string): string {
     return firstLine.length > 50 ? firstLine.slice(0, 47) + '...' : firstLine;
 }
 
-function restoreFromHistory(entry: IHistoryEntry): void {
-    result.value = entry.result;
-}
-
 function reset(): void {
     result.value = null;
     error.value = null;
     resetProgress();
 }
 
-// ── Provider label ────────────────────────────────────────────────────────────
 function providerLabel(provider: TProvider): string {
     const labels: Record<TProvider, string> = {
         anthropic: 'Claude',
@@ -160,7 +166,6 @@ function providerLabel(provider: TProvider): string {
     return labels[provider];
 }
 
-// ── Fit score colour ──────────────────────────────────────────────────────────
 function fitScoreColor(score: number): string {
     if (score >= 80) {
         return 'var(--green)';
@@ -179,21 +184,22 @@ function fitScoreColor(score: number): string {
 
 // ── Export ────────────────────────────────────────────────────────────────────
 export function useAnalyser() {
-    onMounted(() => {
-        loadHistory();
+    onMounted(async () => {
+        await loadHistory();
     });
 
     return {
         // State
         result,
         isLoading,
+        isHistoryLoading,
         error,
         progress,
         history,
         // Actions
         analyse,
+        loadAnalysis,
         reset,
-        restoreFromHistory,
         deleteFromHistory,
         clearHistory,
         // Helpers

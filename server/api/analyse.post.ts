@@ -1,7 +1,7 @@
 import Anthropic from '@anthropic-ai/sdk';
 import OpenAI from 'openai';
 import { GoogleGenerativeAI } from '@google/generative-ai';
-import type { IAnalysisInput, IAnalysisResult } from '~~/app/composables/types';
+import type { IAnalysisInput, IAnalysisResult } from '~/types';
 
 // ── System prompt ─────────────────────────────────────────────────────────────
 const SYSTEM_PROMPT = `You are an expert technical recruiter and talent analyst with deep knowledge of software engineering roles, tech stacks, and hiring best practices.

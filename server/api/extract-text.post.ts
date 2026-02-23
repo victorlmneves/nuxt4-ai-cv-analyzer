@@ -29,10 +29,11 @@ export default defineEventHandler(async (event) => {
 
     if (ext === 'pdf') {
         // Dynamic import to avoid SSR issues with pdf-parse
-        const pdfParse = await import('pdf-parse').then((m) => m.default ?? m);
-        const data = await pdfParse(fileField.data);
+        const { PDFParse } = await import('pdf-parse');
+        const parser = new PDFParse({ data: fileField.data });
+        const textResult = await parser.getText();
 
-        return { text: data.text };
+        return { text: textResult.text };
     }
 
     throw createError({

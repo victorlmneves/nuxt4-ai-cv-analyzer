@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useComparison } from '~/composables/useComparison';
+import { exportComparisonPDF } from '~/composables/usePDFExportComparison';
 import type { TProvider } from '~/types/index';
 
 interface IExtendedUser {
@@ -85,6 +86,13 @@ const canSubmit = computed(() => !isLoading.value && cvTexts.value.every((t: str
 
 async function submit(): Promise<void> {
     await compare(cvTexts.value, jobDescription.value, provider.value);
+}
+
+// Add export handler
+async function handleExportPDF() {
+    if (result.value) {
+        await exportComparisonPDF(result.value);
+    }
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -294,6 +302,7 @@ defineOptions({ name: 'ComparePage' });
                     </div>
                     <div class="compare-results__actions">
                         <button class="compare-results__new-btn" @click="reset">← New comparison</button>
+                        <button class="compare-results__export-btn" @click="handleExportPDF" style="margin-left: 1rem">Export PDF</button>
                     </div>
                 </div>
 

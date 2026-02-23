@@ -6,23 +6,24 @@ interface IAnalysis {
     overallScore: number;
 }
 
-const props = defineProps<{ status: { key: string; label: string }; analyses: IAnalysis[] }>();
-
-const emit = defineEmits(['move']);
-let draggingId: string | null = null;
+const props = defineProps<{ status: { key: string; label: string }; analyses: IAnalysis[]; draggingId: string | null }>();
+const emit = defineEmits(['move', 'updateDragging']);
 
 function onDragStart(id: string) {
-    draggingId = id;
+    emit('updateDragging', id);
 }
 
 function onDragEnd() {
-    draggingId = null;
+    emit('updateDragging', null);
 }
 
 function onDrop() {
-    if (draggingId) {
-        emit('move', draggingId, props.status.key);
-        draggingId = null;
+    if (props.draggingId) {
+        emit('move', props.draggingId, props.status.key);
+        emit('updateDragging', null);
+    } else {
+        // eslint-disable-next-line no-console
+        console.info('[KANBAN] Drop: nothing to move');
     }
 }
 </script>

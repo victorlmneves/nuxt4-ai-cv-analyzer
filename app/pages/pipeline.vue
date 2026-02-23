@@ -2,6 +2,9 @@
 type TAnalysis = {
     id: string;
     status: string;
+    candidateName: string;
+    roleName: string;
+    overallScore: number;
 };
 
 const statuses = [
@@ -19,7 +22,22 @@ function analysesByStatus(status: string) {
 }
 
 async function fetchAnalyses() {
-    analyses.value = await $fetch('/api/analyses');
+    // Ensure the fetched data matches TAnalysis/IAnalysis structure
+    const data = await $fetch<TAnalysis[]>('/api/analyses');
+
+    analyses.value = data.map((a: TAnalysis) => ({
+        id: a.id,
+        status: a.status,
+        candidateName: a.candidateName,
+        roleName: a.roleName,
+        overallScore: a.overallScore,
+    }));
+}
+
+const draggingId = ref<string | null>(null);
+
+function updateDragging(val: string | null) {
+    draggingId.value = val;
 }
 
 async function moveAnalysis(id: string, newStatus: string) {
@@ -54,7 +72,9 @@ defineOptions({ name: 'PipelinePage' });
                         :key="status.key"
                         :status="status"
                         :analyses="analysesByStatus(status.key)"
+                        :dragging-id="draggingId"
                         @move="moveAnalysis"
+                        @update-dragging="updateDragging"
                     />
                 </div>
             </div>

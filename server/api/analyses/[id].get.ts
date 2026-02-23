@@ -7,7 +7,12 @@ import { requireAuth } from '~~/server/utils/auth';
 // ── GET /api/analyses/:id ─────────────────────────────────────────────────────
 export default defineEventHandler(async (event) => {
     if (event.req.method === 'PATCH') {
-        const id = event.context.params.id;
+        const id = event.context.params?.id;
+
+        if (!id) {
+            throw createError({ statusCode: 400, statusMessage: 'Analysis ID is required.' });
+        }
+
         const body = await readBody(event);
         const db = useDb();
 

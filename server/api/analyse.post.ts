@@ -94,11 +94,7 @@ function extractJson(raw: string): IAnalysisResult {
 }
 
 // ── Provider handlers ─────────────────────────────────────────────────────────
-async function analyseWithAnthropic(
-    cvText: string,
-    jobDescription: string,
-    apiKey: string,
-): Promise<IAnalysisResult> {
+async function analyseWithAnthropic(cvText: string, jobDescription: string, apiKey: string): Promise<IAnalysisResult> {
     const client = new Anthropic({ apiKey });
 
     const message = await client.messages.create({
@@ -121,11 +117,7 @@ async function analyseWithAnthropic(
     return extractJson(text);
 }
 
-async function analyseWithOpenAI(
-    cvText: string,
-    jobDescription: string,
-    apiKey: string,
-): Promise<IAnalysisResult> {
+async function analyseWithOpenAI(cvText: string, jobDescription: string, apiKey: string): Promise<IAnalysisResult> {
     const client = new OpenAI({ apiKey });
 
     const response = await client.chat.completions.create({
@@ -143,11 +135,7 @@ async function analyseWithOpenAI(
     return extractJson(text);
 }
 
-async function analyseWithGemini(
-    cvText: string,
-    jobDescription: string,
-    apiKey: string,
-): Promise<IAnalysisResult> {
+async function analyseWithGemini(cvText: string, jobDescription: string, apiKey: string): Promise<IAnalysisResult> {
     const genAI = new GoogleGenerativeAI(apiKey);
     const model = genAI.getGenerativeModel({
         model: 'gemini-2.5-flash',
@@ -217,20 +205,23 @@ export default defineEventHandler(async (event) => {
 
     const db = useDb();
 
-    const inserted = await db.insert(analyses).values({
-        userId: sessionUser.id,
-        candidateName: analysisResult.candidate.name ?? 'Unknown Candidate',
-        candidateRole: analysisResult.candidate.currentRole,
-        roleName: extractRoleName(body.jobDescription),
-        overallScore: analysisResult.fitScore.overall,
-        technicalScore: analysisResult.fitScore.technical,
-        experienceScore: analysisResult.fitScore.experience,
-        softSkillsScore: analysisResult.fitScore.softSkills,
-        verdict: analysisResult.fitScore.verdict,
-        redFlagCount: analysisResult.redFlags.length,
-        provider: analysisResult.provider,
-        result: analysisResult,
-    }).returning({ id: analyses.id });
+    const inserted = await db
+        .insert(analyses)
+        .values({
+            userId: sessionUser.id,
+            candidateName: analysisResult.candidate.name ?? 'Unknown Candidate',
+            candidateRole: analysisResult.candidate.currentRole,
+            roleName: extractRoleName(body.jobDescription),
+            overallScore: analysisResult.fitScore.overall,
+            technicalScore: analysisResult.fitScore.technical,
+            experienceScore: analysisResult.fitScore.experience,
+            softSkillsScore: analysisResult.fitScore.softSkills,
+            verdict: analysisResult.fitScore.verdict,
+            redFlagCount: analysisResult.redFlags.length,
+            provider: analysisResult.provider,
+            result: analysisResult,
+        })
+        .returning({ id: analyses.id });
 
     if (!inserted || inserted.length === 0) {
         throw createError({ statusCode: 500, statusMessage: 'Failed to save analysis to database.' });

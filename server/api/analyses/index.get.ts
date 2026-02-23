@@ -26,12 +26,7 @@ export default defineEventHandler(async (event) => {
             createdAt: analyses.createdAt,
         })
         .from(analyses)
-        .where(
-            and(
-                eq(analyses.userId, sessionUser.id),
-                eq(analyses.isArchived, false),
-            ),
-        )
+        .where(and(eq(analyses.userId, sessionUser.id), eq(analyses.isArchived, false)))
         .orderBy(desc(analyses.createdAt))
         .limit(50);
 

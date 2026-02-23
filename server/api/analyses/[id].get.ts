@@ -17,12 +17,7 @@ export default defineEventHandler(async (event) => {
     const [row] = await db
         .select()
         .from(analyses)
-        .where(
-            and(
-                eq(analyses.id, id),
-                eq(analyses.userId, sessionUser.id),
-            ),
-        )
+        .where(and(eq(analyses.id, id), eq(analyses.userId, sessionUser.id)))
         .limit(1);
 
     if (!row) {

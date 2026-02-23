@@ -13,9 +13,17 @@ const { data: stats, pending, error } = await useFetch<IAdminStats>('/api/admin/
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 function verdictColor(verdict: string): string {
-    if (verdict === 'strong fit') return 'var(--green)';
-    if (verdict === 'good fit') return 'var(--accent)';
-    if (verdict === 'partial fit') return 'var(--amber)';
+    if (verdict === 'strong fit') {
+        return 'var(--green)';
+    }
+
+    if (verdict === 'good fit') {
+        return 'var(--accent)';
+    }
+
+    if (verdict === 'partial fit') {
+        return 'var(--amber)';
+    }
 
     return 'var(--red)';
 }
@@ -126,10 +134,7 @@ function maxRecruiterCount(): number {
                                 :key="verdict"
                                 class="verdict-row"
                             >
-                                <span
-                                    class="verdict-dot"
-                                    :style="{ background: verdictColor(verdict) }"
-                                />
+                                <span class="verdict-dot" :style="{ background: verdictColor(verdict) }" />
                                 <span class="verdict-name">{{ verdict }}</span>
                                 <span class="verdict-count font-mono">{{ verdictCount(verdict) }}</span>
                             </div>
@@ -141,17 +146,13 @@ function maxRecruiterCount(): number {
                         <h3 class="card-title font-serif">Provider usage</h3>
 
                         <div class="provider-list">
-                            <div
-                                v-for="p in ['anthropic', 'openai', 'gemini']"
-                                :key="p"
-                                class="provider-row"
-                            >
+                            <div v-for="p in ['anthropic', 'openai', 'gemini']" :key="p" class="provider-row">
                                 <span class="provider-name">{{ providerLabel(p) }}</span>
                                 <div class="mini-bar-track">
                                     <div
                                         class="mini-bar-fill"
                                         :style="{
-                                            width: (providerCount(p) / maxProviderCount() * 100) + '%',
+                                            width: (providerCount(p) / maxProviderCount()) * 100 + '%',
                                         }"
                                     />
                                 </div>
@@ -166,11 +167,7 @@ function maxRecruiterCount(): number {
                     <h3 class="card-title font-serif">Recruiter activity</h3>
 
                     <div class="recruiters-list">
-                        <div
-                            v-for="r in stats.byRecruiter"
-                            :key="r.userId"
-                            class="recruiter-row"
-                        >
+                        <div v-for="r in stats.byRecruiter" :key="r.userId" class="recruiter-row">
                             <div class="recruiter-avatar font-serif">
                                 {{ r.name.charAt(0).toUpperCase() }}
                             </div>
@@ -185,7 +182,7 @@ function maxRecruiterCount(): number {
                                     <div
                                         class="mini-bar-fill"
                                         :style="{
-                                            width: (r.analysisCount / maxRecruiterCount() * 100) + '%',
+                                            width: (r.analysisCount / maxRecruiterCount()) * 100 + '%',
                                         }"
                                     />
                                 </div>
@@ -193,12 +190,8 @@ function maxRecruiterCount(): number {
                             </div>
 
                             <div class="recruiter-meta">
-                                <span class="recruiter-score font-mono">
-                                    avg {{ r.avgScore ? Number(r.avgScore).toFixed(0) : '—' }}
-                                </span>
-                                <span class="recruiter-date font-mono">
-                                    last seen {{ formatDate(r.lastSeenAt) }}
-                                </span>
+                                <span class="recruiter-score font-mono">avg {{ r.avgScore ? Number(r.avgScore).toFixed(0) : '—' }}</span>
+                                <span class="recruiter-date font-mono">last seen {{ formatDate(r.lastSeenAt) }}</span>
                             </div>
                         </div>
                     </div>
@@ -209,21 +202,14 @@ function maxRecruiterCount(): number {
                     <h3 class="card-title font-serif">Recent analyses</h3>
 
                     <div class="recent-list">
-                        <div
-                            v-for="a in stats.recent"
-                            :key="a.id"
-                            class="recent-row"
-                        >
+                        <div v-for="a in stats.recent" :key="a.id" class="recent-row">
                             <div class="recent-candidate">
                                 <strong>{{ a.candidateName }}</strong>
                                 <span class="recent-role">{{ a.roleName }}</span>
                             </div>
 
                             <div class="recent-meta">
-                                <span
-                                    class="verdict-mini font-mono"
-                                    :style="{ color: verdictColor(a.verdict) }"
-                                >
+                                <span class="verdict-mini font-mono" :style="{ color: verdictColor(a.verdict) }">
                                     {{ a.verdict }}
                                 </span>
                                 <span class="score-mini font-mono">{{ a.overallScore }}%</span>
@@ -353,7 +339,7 @@ function maxRecruiterCount(): number {
     gap: 1rem;
 }
 
-@media (max-width: 700px) {
+@media (width <= 700px) {
     .kpi-row {
         grid-template-columns: repeat(2, 1fr);
     }
@@ -391,7 +377,7 @@ function maxRecruiterCount(): number {
     gap: 1.5rem;
 }
 
-@media (max-width: 600px) {
+@media (width <= 600px) {
     .two-col {
         grid-template-columns: 1fr;
     }

@@ -19,12 +19,7 @@ export default defineEventHandler(async (event) => {
     const [updated] = await db
         .update(analyses)
         .set({ isArchived: true })
-        .where(
-            and(
-                eq(analyses.id, id),
-                eq(analyses.userId, sessionUser.id),
-            ),
-        )
+        .where(and(eq(analyses.id, id), eq(analyses.userId, sessionUser.id)))
         .returning({ id: analyses.id });
 
     if (!updated) {

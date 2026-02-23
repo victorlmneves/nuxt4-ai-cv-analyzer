@@ -56,4 +56,3 @@ export default defineOAuthGoogleEventHandler({
         return sendRedirect(event, '/auth/login?error=oauth');
     },
 });
-

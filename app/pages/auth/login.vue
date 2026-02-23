@@ -19,17 +19,18 @@ const hasError = computed(() => route.query.error === 'oauth');
             </div>
 
             <h1 class="login-title font-serif">
-                Sign in to<br /><em>your workspace</em>
+                Sign in to
+                <br />
+                <em>your workspace</em>
             </h1>
 
             <p class="login-sub">
-                AI-powered CV analysis for technical recruiters.<br />
+                AI-powered CV analysis for technical recruiters.
+                <br />
                 Sign in with your work account to continue.
             </p>
 
-            <p v-if="hasError" class="login-error">
-                Authentication failed. Please try again.
-            </p>
+            <p v-if="hasError" class="login-error">Authentication failed. Please try again.</p>
 
             <div class="oauth-buttons">
                 <a href="/auth/microsoft" class="oauth-btn microsoft-btn">
@@ -66,7 +67,8 @@ const hasError = computed(() => route.query.error === 'oauth');
             </div>
 
             <p class="login-footer">
-                By signing in you agree to use this tool responsibly.<br />
+                By signing in you agree to use this tool responsibly.
+                <br />
                 Your data is scoped to your account only.
             </p>
         </div>
@@ -92,7 +94,7 @@ const hasError = computed(() => route.query.error === 'oauth');
     padding: 3rem 2.5rem;
     box-shadow: var(--shadow-lg);
     text-align: center;
-    animation: fadeUp 0.4s ease both;
+    animation: fade-up 0.4s ease both;
 }
 
 .login-brand {
@@ -167,13 +169,13 @@ const hasError = computed(() => route.query.error === 'oauth');
     text-decoration: none;
     cursor: pointer;
     transition: all 0.15s;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 1px 3px rgb(0 0 0 / 8%);
     font-family: 'DM Sans', sans-serif;
 }
 
 .oauth-btn:hover {
     border-color: var(--ink-soft);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 8px rgb(0 0 0 / 10%);
 }
 
 .oauth-icon {

@@ -18,8 +18,8 @@
     --blue: #1d4ed8;
     --blue-pale: #eff6ff;
     --radius: 3px;
-    --shadow: 0 1px 3px rgba(15, 14, 13, 0.08), 0 4px 16px rgba(15, 14, 13, 0.04);
-    --shadow-lg: 0 2px 8px rgba(15, 14, 13, 0.12), 0 12px 40px rgba(15, 14, 13, 0.08);
+    --shadow: 0 1px 3px rgb(15 14 13 / 8%), 0 4px 16px rgb(15 14 13 / 4%);
+    --shadow-lg: 0 2px 8px rgb(15 14 13 / 12%), 0 12px 40px rgb(15 14 13 / 8%);
 }
 
 *,
@@ -61,7 +61,7 @@ body {
 
 /* ── Typography ────────────────────────────────────────── */
 .font-serif {
-    font-family: 'Fraunces', serif;
+    font-family: Fraunces, serif;
 }
 
 .font-mono {
@@ -69,7 +69,7 @@ body {
 }
 
 /* ── Animations ────────────────────────────────────────── */
-@keyframes fadeUp {
+@keyframes fade-up {
     from {
         opacity: 0;
         transform: translateY(12px);
@@ -81,7 +81,7 @@ body {
     }
 }
 
-@keyframes fadeIn {
+@keyframes fade-in {
     from {
         opacity: 0;
     }
@@ -112,9 +112,9 @@ body {
 }
 
 .animate-fade-up {
-    animation: fadeUp 0.4s ease both;
+    animation: fade-up 0.4s ease both;
 }
 
 .animate-fade-in {
-    animation: fadeIn 0.3s ease both;
+    animation: fade-in 0.3s ease both;
 }

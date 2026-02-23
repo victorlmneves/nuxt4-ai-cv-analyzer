@@ -64,6 +64,7 @@ async function handleFile(file: File): Promise<void> {
         }
 
         const data = (await response.json()) as { text: string };
+
         cvText.value = data.text;
     } catch {
         cvText.value = '';
@@ -234,15 +235,9 @@ const providers = ['anthropic', 'openai', 'gemini'] as const;
                 </div>
 
                 <nav class="header-nav">
-                    <NuxtLink v-if="extendedUser?.role === 'admin'" to="/admin" class="nav-btn">
-                        ▤ Admin
-                    </NuxtLink>
+                    <NuxtLink v-if="extendedUser?.role === 'admin'" to="/admin" class="nav-btn">▤ Admin</NuxtLink>
 
-                    <button
-                        class="nav-btn"
-                        :class="{ active: showHistory }"
-                        @click="showHistory = !showHistory"
-                    >
+                    <button class="nav-btn" :class="{ active: showHistory }" @click="showHistory = !showHistory">
                         History
                         <span v-if="history.length > 0" class="badge">{{ history.length }}</span>
                     </button>
@@ -262,9 +257,7 @@ const providers = ['anthropic', 'openai', 'gemini'] as const;
                     <h3 class="font-serif">Previous Analyses</h3>
 
                     <div class="sidebar-actions">
-                        <button v-if="history.length > 0" class="text-btn danger" @click="clearHistory">
-                            Clear all
-                        </button>
+                        <button v-if="history.length > 0" class="text-btn danger" @click="clearHistory">Clear all</button>
                         <button class="close-btn" @click="showHistory = false">✕</button>
                     </div>
                 </div>
@@ -281,39 +274,19 @@ const providers = ['anthropic', 'openai', 'gemini'] as const;
                 </div>
 
                 <ul v-else class="history-list">
-                    <li
-                        v-for="entry in history"
-                        :key="entry.id"
-                        class="history-item"
-                        @click="loadEntry(entry)"
-                    >
+                    <li v-for="entry in history" :key="entry.id" class="history-item" @click="loadEntry(entry)">
                         <div class="history-item-main">
                             <strong class="history-candidate">{{ entry.candidateName }}</strong>
                             <span class="history-role">{{ entry.roleName }}</span>
                         </div>
 
                         <div class="history-item-meta">
-                            <span
-                                class="score-pill font-mono"
-                                :style="{ color: fitScoreColor(entry.overallScore) }"
-                            >
+                            <span class="score-pill font-mono" :style="{ color: fitScoreColor(entry.overallScore) }">
                                 {{ entry.overallScore }}%
                             </span>
                             <span class="history-date font-mono">{{ formatDate(entry.createdAt) }}</span>
-                            <button
-                                class="edit-btn"
-                                title="Edit analysis inputs"
-                                @click.stop="editEntry(entry)"
-                            >
-                                ✎
-                            </button>
-                            <button
-                                class="delete-btn"
-                                title="Delete analysis"
-                                @click.stop="deleteFromHistory(entry.id)"
-                            >
-                                ✕
-                            </button>
+                            <button class="edit-btn" title="Edit analysis inputs" @click.stop="editEntry(entry)">✎</button>
+                            <button class="delete-btn" title="Delete analysis" @click.stop="deleteFromHistory(entry.id)">✕</button>
                         </div>
                     </li>
                 </ul>
@@ -326,17 +299,17 @@ const providers = ['anthropic', 'openai', 'gemini'] as const;
 
         <!-- ── Main ───────────────────────────────────────────────── -->
         <main class="main-content">
-
             <!-- Input panel — shown when no result -->
             <section v-if="!result && !isLoading" class="input-panel animate-fade-up">
                 <div class="panel-intro">
                     <h1 class="panel-title font-serif">
-                        CV Intelligence<br />
+                        CV Intelligence
+                        <br />
                         <em>for modern recruiters</em>
                     </h1>
                     <p class="panel-subtitle">
-                        Paste a CV and a job description. Get fit scores, tech stack analysis,
-                        red flags, and tailored interview questions — in seconds.
+                        Paste a CV and a job description. Get fit scores, tech stack analysis, red flags, and tailored interview questions —
+                        in seconds.
                     </p>
                 </div>
 
@@ -346,18 +319,10 @@ const providers = ['anthropic', 'openai', 'gemini'] as const;
                         <div class="input-card-header">
                             <label class="input-label">Candidate CV</label>
                             <div class="input-tabs">
-                                <button
-                                    class="tab-btn"
-                                    :class="{ active: cvInputMode === 'paste' }"
-                                    @click="cvInputMode = 'paste'"
-                                >
+                                <button class="tab-btn" :class="{ active: cvInputMode === 'paste' }" @click="cvInputMode = 'paste'">
                                     Paste
                                 </button>
-                                <button
-                                    class="tab-btn"
-                                    :class="{ active: cvInputMode === 'upload' }"
-                                    @click="cvInputMode = 'upload'"
-                                >
+                                <button class="tab-btn" :class="{ active: cvInputMode === 'upload' }" @click="cvInputMode = 'upload'">
                                     Upload
                                 </button>
                             </div>
@@ -379,13 +344,7 @@ const providers = ['anthropic', 'openai', 'gemini'] as const;
                             @dragleave="isDraggingOver = false"
                             @drop.prevent="onDrop"
                         >
-                            <input
-                                id="cv-file"
-                                type="file"
-                                accept=".txt,.pdf,.docx"
-                                class="file-input"
-                                @change="onFileInput"
-                            />
+                            <input id="cv-file" type="file" accept=".txt,.pdf,.docx" class="file-input" @change="onFileInput" />
 
                             <label for="cv-file" class="dropzone-label">
                                 <span class="dropzone-icon">↑</span>
@@ -393,7 +352,9 @@ const providers = ['anthropic', 'openai', 'gemini'] as const;
                                     {{ uploadedFileName }}
                                 </span>
                                 <span v-else>
-                                    Drop a file or <u>browse</u><br />
+                                    Drop a file or
+                                    <u>browse</u>
+                                    <br />
                                     <small>.txt · .pdf · .docx</small>
                                 </span>
                             </label>
@@ -431,11 +392,7 @@ const providers = ['anthropic', 'openai', 'gemini'] as const;
                         </button>
                     </div>
 
-                    <button
-                        class="submit-btn"
-                        :disabled="!cvText.trim() || !jobDescription.trim()"
-                        @click="submit"
-                    >
+                    <button class="submit-btn" :disabled="!cvText.trim() || !jobDescription.trim()" @click="submit">
                         Analyse candidate →
                     </button>
                 </div>
@@ -460,7 +417,6 @@ const providers = ['anthropic', 'openai', 'gemini'] as const;
 
             <!-- Results -->
             <section v-if="result && !isLoading" class="results-panel animate-fade-up">
-
                 <!-- Results header -->
                 <div class="results-header">
                     <button class="back-btn" @click="reset">← New analysis</button>
@@ -499,10 +455,7 @@ const providers = ['anthropic', 'openai', 'gemini'] as const;
                     </div>
 
                     <div class="hero-score">
-                        <div
-                            class="score-ring"
-                            :style="{ '--score-color': fitScoreColor(result.fitScore.overall) }"
-                        >
+                        <div class="score-ring" :style="{ '--score-color': fitScoreColor(result.fitScore.overall) }">
                             <span class="score-number font-serif">{{ result.fitScore.overall }}</span>
                             <span class="score-unit font-mono">/ 100</span>
                         </div>
@@ -536,9 +489,7 @@ const providers = ['anthropic', 'openai', 'gemini'] as const;
                                 }"
                             />
                         </div>
-                        <span class="score-bar-value font-mono">
-                            {{ getFitScoreValue(key) }}%
-                        </span>
+                        <span class="score-bar-value font-mono">{{ getFitScoreValue(key) }}%</span>
                     </div>
                 </div>
 
@@ -604,11 +555,7 @@ const providers = ['anthropic', 'openai', 'gemini'] as const;
                     <h3 class="card-title font-serif">Tech Stack</h3>
 
                     <div class="tech-grid">
-                        <div
-                            v-for="([category, skills]) in techStackEntries()"
-                            :key="category"
-                            class="tech-category"
-                        >
+                        <div v-for="[category, skills] in techStackEntries()" :key="category" class="tech-category">
                             <h4 class="tech-category-title font-mono">{{ category }}</h4>
 
                             <div class="skill-list">
@@ -618,10 +565,7 @@ const providers = ['anthropic', 'openai', 'gemini'] as const;
                                         <span class="skill-level font-mono">{{ skill.level }}</span>
                                     </div>
                                     <div class="skill-bar">
-                                        <div
-                                            class="skill-bar-fill"
-                                            :style="{ width: skillLevelWidth(skill.level) }"
-                                        />
+                                        <div class="skill-bar-fill" :style="{ width: skillLevelWidth(skill.level) }" />
                                     </div>
                                     <div v-if="skill.yearsOfExperience || skill.lastUsed" class="skill-meta font-mono">
                                         <span v-if="skill.yearsOfExperience">{{ skill.yearsOfExperience }}y</span>
@@ -638,16 +582,9 @@ const providers = ['anthropic', 'openai', 'gemini'] as const;
                     <h3 class="card-title font-serif">Soft Skills</h3>
 
                     <div class="soft-skills-grid">
-                        <div
-                            v-for="(skill, i) in result.softSkills"
-                            :key="i"
-                            class="soft-skill-item"
-                        >
+                        <div v-for="(skill, i) in result.softSkills" :key="i" class="soft-skill-item">
                             <div class="soft-skill-header">
-                                <span
-                                    class="confidence-dot"
-                                    :style="{ background: confidenceDot(skill.confidence) }"
-                                />
+                                <span class="confidence-dot" :style="{ background: confidenceDot(skill.confidence) }" />
                                 <strong class="soft-skill-name">{{ skill.name }}</strong>
                                 <span class="soft-confidence font-mono">{{ skill.confidence }}</span>
                             </div>
@@ -664,11 +601,7 @@ const providers = ['anthropic', 'openai', 'gemini'] as const;
                     </h3>
 
                     <div class="questions-list">
-                        <div
-                            v-for="(q, i) in result.interviewQuestions"
-                            :key="i"
-                            class="question-item"
-                        >
+                        <div v-for="(q, i) in result.interviewQuestions" :key="i" class="question-item">
                             <div class="question-header">
                                 <span class="question-num font-mono">{{ String(i + 1).padStart(2, '0') }}</span>
                                 <span
@@ -687,7 +620,6 @@ const providers = ['anthropic', 'openai', 'gemini'] as const;
                         </div>
                     </div>
                 </div>
-
             </section>
         </main>
     </div>
@@ -975,7 +907,9 @@ const providers = ['anthropic', 'openai', 'gemini'] as const;
     cursor: pointer;
     color: var(--ink-muted);
     opacity: 0;
-    transition: opacity 0.15s, color 0.15s;
+    transition:
+        opacity 0.15s,
+        color 0.15s;
     padding: 0.2rem;
 }
 
@@ -1007,7 +941,7 @@ const providers = ['anthropic', 'openai', 'gemini'] as const;
     position: fixed;
     inset: 0;
     z-index: 150;
-    background: rgba(15, 14, 13, 0.2);
+    background: rgb(15 14 13 / 20%);
 }
 
 .fade-enter-active,
@@ -1066,7 +1000,7 @@ const providers = ['anthropic', 'openai', 'gemini'] as const;
     gap: 1.5rem;
 }
 
-@media (max-width: 700px) {
+@media (width <= 700px) {
     .input-grid {
         grid-template-columns: 1fr;
     }
@@ -1530,7 +1464,7 @@ const providers = ['anthropic', 'openai', 'gemini'] as const;
     gap: 1.5rem;
 }
 
-@media (max-width: 600px) {
+@media (width <= 600px) {
     .two-col {
         grid-template-columns: 1fr;
     }

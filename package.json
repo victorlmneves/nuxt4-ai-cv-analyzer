@@ -12,9 +12,9 @@
         "db:studio": "drizzle-kit studio",
         "lint": "eslint .",
         "lint:fix": "eslint --fix .",
-        "lint:css": "stylelint '**/*.{css,vue}'",
-        "lint:css:fix": "stylelint '**/*.{css,vue}' --fix",
-        "format": "prettier --write '**/*.{ts,vue,js,json}' && stylelint '**/*.{css,vue}' --fix && eslint --fix '**/*.{ts,vue,js}'"
+        "lint:css": "stylelint '**/*.{css,vue}' --ignore-pattern '.nuxt/**' --ignore-pattern '.output/**' --ignore-pattern 'dist/**' --ignore-pattern 'node_modules/**'",
+        "lint:css:fix": "stylelint '**/*.{css,vue}' --ignore-pattern '.nuxt/**' --ignore-pattern '.output/**' --ignore-pattern 'dist/**' --ignore-pattern 'node_modules/**' --fix",
+        "format": "prettier --write '**/*.{ts,vue,js,json}' --ignore-path .gitignore && stylelint '**/*.{css,vue}' --ignore-pattern '.nuxt/**' --ignore-pattern '.output/**' --fix && eslint --fix '**/*.{ts,vue,js}'"
     },
     "dependencies": {
         "@anthropic-ai/sdk": "^0.78.0",

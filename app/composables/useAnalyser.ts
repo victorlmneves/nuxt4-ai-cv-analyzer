@@ -37,9 +37,7 @@ async function deleteFromHistory(id: string): Promise<void> {
 
 async function clearHistory(): Promise<void> {
     // Archive all visible entries in parallel
-    await Promise.allSettled(
-        history.value.map((e) => $fetch(`/api/analyses/${e.id}`, { method: 'DELETE' })),
-    );
+    await Promise.allSettled(history.value.map((e) => $fetch(`/api/analyses/${e.id}`, { method: 'DELETE' })));
 
     history.value = [];
 }

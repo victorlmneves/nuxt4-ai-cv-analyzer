@@ -1,29 +1,49 @@
 {
-  "name": "cv-analyzer",
-  "private": true,
-  "type": "module",
-  "scripts": {
-    "build": "nuxt build",
-    "dev": "nuxt dev",
-    "generate": "nuxt generate",
-    "preview": "nuxt preview",
-    "db:generate": "drizzle-kit generate",
-    "db:migrate": "drizzle-kit migrate",
-    "db:studio": "drizzle-kit studio"
-  },
-  "dependencies": {
-    "@anthropic-ai/sdk": "^0.39.0",
-    "@google/generative-ai": "^0.21.0",
-    "drizzle-orm": "^0.41.0",
-    "mammoth": "^1.8.0",
-    "nuxt": "^3.16.0",
-    "nuxt-auth-utils": "^0.5.0",
-    "openai": "^4.86.0",
-    "pdf-parse": "^1.1.1",
-    "postgres": "^3.4.5"
-  },
-  "devDependencies": {
-    "@nuxtjs/tailwindcss": "^6.13.2",
-    "drizzle-kit": "^0.30.0"
-  }
+    "name": "cv-analyzer",
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "build": "nuxt build",
+        "dev": "nuxt dev",
+        "generate": "nuxt generate",
+        "preview": "nuxt preview",
+        "db:generate": "drizzle-kit generate",
+        "db:migrate": "drizzle-kit migrate",
+        "db:studio": "drizzle-kit studio",
+        "lint": "eslint .",
+        "lint:fix": "eslint --fix .",
+        "lint:css": "stylelint '**/*.{css,vue}'",
+        "lint:css:fix": "stylelint '**/*.{css,vue}' --fix",
+        "format": "prettier --write '**/*.{ts,vue,js,json}' && stylelint '**/*.{css,vue}' --fix && eslint --fix '**/*.{ts,vue,js}'"
+    },
+    "dependencies": {
+        "@anthropic-ai/sdk": "^0.78.0",
+        "@google/generative-ai": "^0.24.1",
+        "drizzle-orm": "^0.45.1",
+        "mammoth": "^1.11.0",
+        "nuxt": "^4.3.1",
+        "nuxt-auth-utils": "^0.5.29",
+        "openai": "^6.22.0",
+        "pdf-parse": "^2.4.5",
+        "postgres": "^3.4.8"
+    },
+    "devDependencies": {
+        "@eslint/js": "^10.0.1",
+        "@nuxtjs/tailwindcss": "^6.14.0",
+        "@typescript-eslint/parser": "^8.56.0",
+        "drizzle-kit": "^0.31.9",
+        "eslint": "^9.15.0",
+        "eslint-config-prettier": "^10.0.1",
+        "eslint-plugin-jsdoc": "^62.7.0",
+        "eslint-plugin-jsonc": "^3.1.0",
+        "eslint-plugin-regexp": "^3.0.0",
+        "eslint-plugin-vue": "^10.8.0",
+        "globals": "^17.3.0",
+        "prettier": "^3.8.1",
+        "stylelint": "^17.3.0",
+        "stylelint-config-recommended-vue": "^1.6.1",
+        "stylelint-config-standard": "^40.0.0",
+        "typescript-eslint": "^8.56.0",
+        "vue-eslint-parser": "^10.4.0"
+    }
 }

@@ -72,20 +72,10 @@ defineOptions({
 <template>
     <div class="admin-shell">
         <!-- Header -->
-        <header class="app-header">
-            <div class="app-header__inner">
-                <div class="app-header__brand">
-                    <span class="brand__mark font-serif">CV</span>
-                    <span class="brand__name font-serif">Analyst</span>
-                    <span class="brand__tag font-mono">admin</span>
-                </div>
-
-                <nav class="app-header__nav">
-                    <NuxtLink to="/" class="nav-btn">← Analyser</NuxtLink>
-                    <a href="/auth/logout" class="nav-btn">Sign out</a>
-                </nav>
-            </div>
-        </header>
+        <AppHeader tag="admin">
+            <NuxtLink to="/" class="nav-btn">← Analyser</NuxtLink>
+            <a href="/auth/logout" class="nav-btn">Sign out</a>
+        </AppHeader>
 
         <main class="admin-content">
             <div class="admin-page__intro">
@@ -104,27 +94,14 @@ defineOptions({
             <template v-else-if="stats">
                 <!-- KPI row -->
                 <div class="kpi-row">
-                    <div class="kpi-card">
-                        <span class="kpi-card__value font-serif">{{ totalAnalyses() }}</span>
-                        <span class="kpi-card__label">Total analyses</span>
-                    </div>
-
-                    <div class="kpi-card">
-                        <span class="kpi-card__value font-serif">{{ avgScore() }}</span>
-                        <span class="kpi-card__label">Avg fit score</span>
-                    </div>
-
-                    <div class="kpi-card">
-                        <span class="kpi-card__value font-serif">{{ stats.byRecruiter.length }}</span>
-                        <span class="kpi-card__label">Recruiters</span>
-                    </div>
-
-                    <div class="kpi-card">
-                        <span class="kpi-card__value font-serif" :style="{ color: 'var(--green)' }">
-                            {{ verdictCount('strong fit') + verdictCount('good fit') }}
-                        </span>
-                        <span class="kpi-card__label">Strong / Good fits</span>
-                    </div>
+                    <KpiCard :value="totalAnalyses()" label="Total analyses" />
+                    <KpiCard :value="avgScore()" label="Avg fit score" />
+                    <KpiCard :value="stats.byRecruiter.length" label="Recruiters" />
+                    <KpiCard
+                        :value="verdictCount('strong fit') + verdictCount('good fit')"
+                        label="Strong / Good fits"
+                        value-color="var(--green)"
+                    />
                 </div>
 
                 <div class="two-col">

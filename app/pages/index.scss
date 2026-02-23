@@ -700,38 +700,7 @@
     gap: 0.75rem;
 }
 
-.flag-item {
-    border-left: 3px solid;
-    border-radius: 0 var(--radius) var(--radius) 0;
-    padding: 0.875rem 1rem;
-
-    &__header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        margin-bottom: 0.35rem;
-    }
-
-    &__title {
-        font-size: 0.875rem;
-        font-weight: 500;
-    }
-
-    &__desc {
-        font-size: 0.825rem;
-        color: var(--ink-soft);
-        line-height: 1.5;
-    }
-}
-
-/* ── Severity badge ──────────────────────────────────────────── */
-.severity-badge {
-    @include pill-badge;
-    font-size: 0.65rem;
-    padding: 0.15rem 0.5rem;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-}
+/* .flag-item and .severity-badge → RedFlagItem.vue */
 
 /* ── Tech stack ──────────────────────────────────────────────── */
 .tech-grid {
@@ -849,49 +818,4 @@
     gap: 1rem;
 }
 
-.question {
-    border: 1px solid var(--paper-warm);
-    border-radius: var(--radius);
-    padding: 1rem 1.125rem;
-    background: var(--paper);
-
-    &__header {
-        display: flex;
-        align-items: center;
-        gap: 0.6rem;
-        margin-bottom: 0.5rem;
-    }
-
-    &__num {
-        font-size: 0.65rem;
-        color: var(--ink-muted);
-        min-width: 24px;
-    }
-
-    &__category {
-        @include pill-badge;
-        font-size: 0.65rem;
-        padding: 0.15rem 0.5rem;
-        text-transform: capitalize;
-    }
-
-    &__target {
-        font-size: 0.65rem;
-        color: var(--ink-muted);
-        margin-left: auto;
-    }
-
-    &__text {
-        font-size: 0.9rem;
-        font-weight: 500;
-        color: var(--ink);
-        line-height: 1.5;
-        margin-bottom: 0.4rem;
-    }
-
-    &__rationale {
-        font-size: 0.78rem;
-        color: var(--ink-muted);
-        line-height: 1.5;
-    }
-}
+/* .question → InterviewQuestion.vue */

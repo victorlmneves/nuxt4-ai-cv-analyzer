@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useAnalyser } from '~/composables/useAnalyser';
-import type { TProvider, IHistoryEntry, ISkill, TQuestionCategory } from '~/types/index';
+import type { TProvider, IHistoryEntry, ISkill } from '~/types/index';
 
 interface IExtendedUser {
     role?: string;
@@ -114,40 +114,6 @@ function skillLevelWidth(level: ISkill['level']): string {
     return widths[level];
 }
 
-function categoryColor(category: TQuestionCategory): string {
-    const colors: Record<TQuestionCategory, string> = {
-        technical: 'var(--blue)',
-        behavioural: 'var(--green)',
-        situational: 'var(--accent)',
-        cultural: 'var(--amber)',
-    };
-
-    return colors[category];
-}
-
-function categoryBg(category: TQuestionCategory): string {
-    const bgs: Record<TQuestionCategory, string> = {
-        technical: 'var(--blue-pale)',
-        behavioural: 'var(--green-pale)',
-        situational: 'var(--accent-pale)',
-        cultural: 'var(--amber-pale)',
-    };
-
-    return bgs[category];
-}
-
-function severityColor(severity: 'low' | 'medium' | 'high'): string {
-    const colors = { low: 'var(--amber)', medium: 'var(--accent)', high: 'var(--red)' };
-
-    return colors[severity];
-}
-
-function severityBg(severity: 'low' | 'medium' | 'high'): string {
-    const bgs = { low: 'var(--amber-pale)', medium: 'var(--accent-pale)', high: 'var(--red-pale)' };
-
-    return bgs[severity];
-}
-
 function confidenceDot(confidence: 'low' | 'medium' | 'high'): string {
     const colors = { low: 'var(--ink-muted)', medium: 'var(--accent)', high: 'var(--green)' };
 
@@ -231,29 +197,19 @@ defineOptions({
 <template>
     <div class="app-shell">
         <!-- ── Header ──────────────────────────────────────────────── -->
-        <header class="app-header">
-            <div class="app-header__inner">
-                <div class="app-header__brand">
-                    <span class="brand__mark font-serif">CV</span>
-                    <span class="brand__name font-serif">Analyst</span>
-                    <span class="brand__tag font-mono">by recruitr</span>
-                </div>
+        <AppHeader>
+            <NuxtLink v-if="extendedUser?.role === 'admin'" to="/admin" class="nav-btn">▤ Admin</NuxtLink>
 
-                <nav class="app-header__nav">
-                    <NuxtLink v-if="extendedUser?.role === 'admin'" to="/admin" class="nav-btn">▤ Admin</NuxtLink>
+            <button class="nav-btn" :class="{ 'nav-btn--active': showHistory }" @click="showHistory = !showHistory">
+                History
+                <span v-if="history.length > 0" class="nav-btn__badge">{{ history.length }}</span>
+            </button>
 
-                    <button class="nav-btn" :class="{ 'nav-btn--active': showHistory }" @click="showHistory = !showHistory">
-                        History
-                        <span v-if="history.length > 0" class="nav-btn__badge">{{ history.length }}</span>
-                    </button>
-
-                    <div class="user-chip">
-                        <span class="user-chip__name">{{ extendedUser?.name?.split(' ')[0] }}</span>
-                        <a href="/auth/logout" class="user-chip__signout" title="Sign out">⎋</a>
-                    </div>
-                </nav>
+            <div class="user-chip">
+                <span class="user-chip__name">{{ extendedUser?.name?.split(' ')[0] }}</span>
+                <a href="/auth/logout" class="user-chip__signout" title="Sign out">⎋</a>
             </div>
-        </header>
+        </AppHeader>
 
         <!-- ── History sidebar ────────────────────────────────────── -->
         <Transition name="slide">
@@ -539,29 +495,11 @@ defineOptions({
                     </h3>
 
                     <div class="flags-list">
-                        <div
+                        <RedFlagItem
                             v-for="(flag, i) in result.redFlags"
                             :key="i"
-                            class="flag-item"
-                            :style="{
-                                borderLeftColor: severityColor(flag.severity),
-                                background: severityBg(flag.severity),
-                            }"
-                        >
-                            <div class="flag-item__header">
-                                <strong class="flag-item__title">{{ flag.title }}</strong>
-                                <span
-                                    class="severity-badge font-mono"
-                                    :style="{
-                                        color: severityColor(flag.severity),
-                                        background: severityColor(flag.severity) + '18',
-                                    }"
-                                >
-                                    {{ flag.severity }}
-                                </span>
-                            </div>
-                            <p class="flag-item__desc">{{ flag.description }}</p>
-                        </div>
+                            :flag="flag"
+                        />
                     </div>
                 </div>
 
@@ -616,23 +554,12 @@ defineOptions({
                     </h3>
 
                     <div class="questions-list">
-                        <div v-for="(q, i) in result.interviewQuestions" :key="i" class="question">
-                            <div class="question__header">
-                                <span class="question__num font-mono">{{ String(i + 1).padStart(2, '0') }}</span>
-                                <span
-                                    class="question__category font-mono"
-                                    :style="{
-                                        color: categoryColor(q.category),
-                                        background: categoryBg(q.category),
-                                    }"
-                                >
-                                    {{ q.category }}
-                                </span>
-                                <span class="question__target font-mono">{{ q.targetSkill }}</span>
-                            </div>
-                            <p class="question__text">{{ q.question }}</p>
-                            <p class="question__rationale">{{ q.rationale }}</p>
-                        </div>
+                        <InterviewQuestion
+                            v-for="(q, i) in result.interviewQuestions"
+                            :key="i"
+                            :question="q"
+                            :index="i"
+                        />
                     </div>
                 </div>
             </section>

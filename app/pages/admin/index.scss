@@ -53,27 +53,7 @@
     }
 }
 
-.kpi-card {
-    @include card;
-    padding: 1.25rem 1.5rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.35rem;
-
-    &__value {
-        font-size: 2rem;
-        font-weight: 500;
-        line-height: 1;
-        color: var(--ink);
-    }
-
-    &__label {
-        font-size: 0.75rem;
-        color: var(--ink-muted);
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-    }
-}
+// .kpi-card → KpiCard.vue
 
 // ─── Two-col layout ───────────────────────────────────────────────────────────
 .two-col {

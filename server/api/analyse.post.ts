@@ -1,7 +1,21 @@
 import Anthropic from '@anthropic-ai/sdk';
 import OpenAI from 'openai';
 import { GoogleGenerativeAI } from '@google/generative-ai';
+import { useDb } from '#server/db/client';
+import { analyses } from '#server/db/schema';
+import { requireAuth } from '#server/utils/auth';
 import type { IAnalysisInput, IAnalysisResult } from '~/types';
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+function extractRoleName(jd: string): string {
+    if (!jd.trim()) {
+        return 'Unknown Role';
+    }
+
+    const firstLine = jd.trim().split('\n')[0] ?? '';
+
+    return firstLine.length > 50 ? firstLine.slice(0, 47) + '...' : firstLine;
+}
 
 // ── System prompt ─────────────────────────────────────────────────────────────
 const SYSTEM_PROMPT = `You are an expert technical recruiter and talent analyst with deep knowledge of software engineering roles, tech stacks, and hiring best practices.
@@ -148,6 +162,7 @@ async function analyseWithGemini(
 
 // ── Handler ───────────────────────────────────────────────────────────────────
 export default defineEventHandler(async (event) => {
+    const sessionUser = await requireAuth(event);
     const body = await readBody<IAnalysisInput>(event);
 
     if (!body.cvText?.trim()) {
@@ -168,7 +183,7 @@ export default defineEventHandler(async (event) => {
                 throw createError({ statusCode: 400, statusMessage: 'Anthropic API key not configured.' });
             }
 
-            analysisResult = await analyseWithAnthropic(body.cvText, body.jobDescription, config.anthropicApiKey);
+            analysisResult = await analyseWithAnthropic(body.cvText, body.jobDescription, config.anthropicApiKey as string);
             break;
         }
 
@@ -177,7 +192,7 @@ export default defineEventHandler(async (event) => {
                 throw createError({ statusCode: 400, statusMessage: 'OpenAI API key not configured.' });
             }
 
-            analysisResult = await analyseWithOpenAI(body.cvText, body.jobDescription, config.openaiApiKey);
+            analysisResult = await analyseWithOpenAI(body.cvText, body.jobDescription, config.openaiApiKey as string);
             break;
         }
 
@@ -186,7 +201,7 @@ export default defineEventHandler(async (event) => {
                 throw createError({ statusCode: 400, statusMessage: 'Gemini API key not configured.' });
             }
 
-            analysisResult = await analyseWithGemini(body.cvText, body.jobDescription, config.geminiApiKey);
+            analysisResult = await analyseWithGemini(body.cvText, body.jobDescription, config.geminiApiKey as string);
             break;
         }
 
@@ -197,6 +212,32 @@ export default defineEventHandler(async (event) => {
     // Attach metadata not returned by the AI
     analysisResult.provider = body.provider;
     analysisResult.analysedAt = new Date().toISOString();
+    analysisResult.cvText = body.cvText;
+    analysisResult.jobDescription = body.jobDescription;
 
-    return analysisResult;
+    const db = useDb();
+
+    const inserted = await db.insert(analyses).values({
+        userId: sessionUser.id,
+        candidateName: analysisResult.candidate.name ?? 'Unknown Candidate',
+        candidateRole: analysisResult.candidate.currentRole,
+        roleName: extractRoleName(body.jobDescription),
+        overallScore: analysisResult.fitScore.overall,
+        technicalScore: analysisResult.fitScore.technical,
+        experienceScore: analysisResult.fitScore.experience,
+        softSkillsScore: analysisResult.fitScore.softSkills,
+        verdict: analysisResult.fitScore.verdict,
+        redFlagCount: analysisResult.redFlags.length,
+        provider: analysisResult.provider,
+        result: analysisResult,
+    }).returning({ id: analyses.id });
+
+    if (!inserted || inserted.length === 0) {
+        throw createError({ statusCode: 500, statusMessage: 'Failed to save analysis to database.' });
+    }
+
+    return {
+        id: inserted[0]!.id,
+        ...analysisResult,
+    };
 });

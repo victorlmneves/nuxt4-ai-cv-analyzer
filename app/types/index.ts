@@ -81,6 +81,8 @@ export interface IAnalysisResult {
     gaps: string[];
     provider: TProvider;
     analysedAt: string;
+    cvText?: string;
+    jobDescription?: string;
 }
 
 // ── History Entry ─────────────────────────────────────────────────────────────

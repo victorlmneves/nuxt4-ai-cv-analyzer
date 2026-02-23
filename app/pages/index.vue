@@ -1,6 +1,11 @@
 <script setup lang="ts">
 import { useAnalyser } from '~/composables/useAnalyser';
-import type { TProvider, IHistoryEntry, ISkill, TQuestionCategory } from '~/types';
+import type { TProvider, IHistoryEntry, ISkill, TQuestionCategory } from '~/types/index';
+
+interface IExtendedUser {
+    role?: string;
+    name?: string;
+}
 
 // ── Composable ────────────────────────────────────────────────────────────────
 const {
@@ -21,6 +26,8 @@ const {
 
 // ── Auth ──────────────────────────────────────────────────────────────────────
 const { user } = useUserSession();
+
+const extendedUser = computed(() => user.value as IExtendedUser | null);
 
 // ── Input state ───────────────────────────────────────────────────────────────
 const cvText = ref('');
@@ -47,15 +54,21 @@ async function handleFile(file: File): Promise<void> {
     form.append('file', file);
 
     try {
-        const response = await $fetch<{ text: string }>('/api/extract-text', {
+        const response = await fetch('/api/extract-text', {
             method: 'POST',
             body: form,
         });
 
-        cvText.value = response.text;
+        if (!response.ok) {
+            throw new Error('Failed to extract text');
+        }
+
+        const data = (await response.json()) as { text: string };
+        cvText.value = data.text;
     } catch {
         cvText.value = '';
         uploadedFileName.value = null;
+
         alert('Could not extract text from this file. Please paste the CV text directly.');
     }
 }
@@ -149,31 +162,64 @@ function formatDate(iso: string): string {
 }
 
 function verdictColor(verdict: string): string {
-    if (verdict === 'strong fit') return 'var(--green)';
-    if (verdict === 'good fit') return 'var(--accent)';
-    if (verdict === 'partial fit') return 'var(--amber)';
+    if (verdict === 'strong fit') {
+        return 'var(--green)';
+    }
+
+    if (verdict === 'good fit') {
+        return 'var(--accent)';
+    }
+
+    if (verdict === 'partial fit') {
+        return 'var(--amber)';
+    }
 
     return 'var(--red)';
 }
 
 function hasAnyTechStack(): boolean {
-    if (!result.value) return false;
+    if (!result.value) {
+        return false;
+    }
 
     const { techStack } = result.value;
 
-    return Object.values(techStack).some((arr) => arr.length > 0);
+    return Object.values(techStack).some((arr) => (arr as ISkill[]).length > 0);
 }
 
 function techStackEntries(): [string, ISkill[]][] {
-    if (!result.value) return [];
+    if (!result.value) {
+        return [];
+    }
 
-    return Object.entries(result.value.techStack).filter(([, skills]) => skills.length > 0) as [string, ISkill[]][];
+    return Object.entries(result.value.techStack).filter(([, skills]) => (skills as ISkill[]).length > 0) as [string, ISkill[]][];
 }
 
 async function loadEntry(entry: IHistoryEntry): Promise<void> {
     showHistory.value = false;
     await loadAnalysis(entry.id);
 }
+
+async function editEntry(entry: IHistoryEntry): Promise<void> {
+    showHistory.value = false;
+    await loadAnalysis(entry.id);
+    if (result.value) {
+        cvText.value = result.value.cvText || '';
+        jobDescription.value = result.value.jobDescription || '';
+        provider.value = result.value.provider;
+        result.value = null;
+    }
+}
+
+function getFitScoreValue(key: 'technical' | 'experience' | 'softSkills'): number {
+    if (!result.value) {
+        return 0;
+    }
+
+    return result.value.fitScore[key];
+}
+
+const providers = ['anthropic', 'openai', 'gemini'] as const;
 </script>
 
 <template>
@@ -188,7 +234,7 @@ async function loadEntry(entry: IHistoryEntry): Promise<void> {
                 </div>
 
                 <nav class="header-nav">
-                    <NuxtLink v-if="user?.role === 'admin'" to="/admin" class="nav-btn">
+                    <NuxtLink v-if="extendedUser?.role === 'admin'" to="/admin" class="nav-btn">
                         ▤ Admin
                     </NuxtLink>
 
@@ -202,7 +248,7 @@ async function loadEntry(entry: IHistoryEntry): Promise<void> {
                     </button>
 
                     <div class="user-chip">
-                        <span class="user-name">{{ user?.name?.split(' ')[0] }}</span>
+                        <span class="user-name">{{ extendedUser?.name?.split(' ')[0] }}</span>
                         <a href="/auth/logout" class="signout-btn" title="Sign out">⎋</a>
                     </div>
                 </nav>
@@ -255,7 +301,15 @@ async function loadEntry(entry: IHistoryEntry): Promise<void> {
                             </span>
                             <span class="history-date font-mono">{{ formatDate(entry.createdAt) }}</span>
                             <button
+                                class="edit-btn"
+                                title="Edit analysis inputs"
+                                @click.stop="editEntry(entry)"
+                            >
+                                ✎
+                            </button>
+                            <button
                                 class="delete-btn"
+                                title="Delete analysis"
                                 @click.stop="deleteFromHistory(entry.id)"
                             >
                                 ✕
@@ -367,7 +421,7 @@ async function loadEntry(entry: IHistoryEntry): Promise<void> {
 
                     <div class="provider-toggle">
                         <button
-                            v-for="p in (['anthropic', 'openai', 'gemini'] as TProvider[])"
+                            v-for="p in providers"
                             :key="p"
                             class="provider-btn"
                             :class="{ active: provider === p }"
@@ -477,13 +531,13 @@ async function loadEntry(entry: IHistoryEntry): Promise<void> {
                             <div
                                 class="score-bar-fill"
                                 :style="{
-                                    width: result.fitScore[key as 'technical' | 'experience' | 'softSkills'] + '%',
-                                    background: fitScoreColor(result.fitScore[key as 'technical' | 'experience' | 'softSkills']),
+                                    width: getFitScoreValue(key) + '%',
+                                    background: fitScoreColor(getFitScoreValue(key)),
                                 }"
                             />
                         </div>
                         <span class="score-bar-value font-mono">
-                            {{ result.fitScore[key as 'technical' | 'experience' | 'softSkills'] }}%
+                            {{ getFitScoreValue(key) }}%
                         </span>
                     </div>
                 </div>
@@ -913,18 +967,25 @@ async function loadEntry(entry: IHistoryEntry): Promise<void> {
     color: var(--ink-muted);
 }
 
+.edit-btn,
 .delete-btn {
     background: none;
     border: none;
-    font-size: 0.75rem;
+    font-size: 0.85rem;
     cursor: pointer;
     color: var(--ink-muted);
     opacity: 0;
-    transition: opacity 0.15s;
+    transition: opacity 0.15s, color 0.15s;
+    padding: 0.2rem;
 }
 
+.history-item:hover .edit-btn,
 .history-item:hover .delete-btn {
     opacity: 1;
+}
+
+.edit-btn:hover {
+    color: var(--accent);
 }
 
 .delete-btn:hover {

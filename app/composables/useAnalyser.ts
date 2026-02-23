@@ -84,7 +84,7 @@ async function analyse(input: IAnalysisInput): Promise<void> {
     startProgress();
 
     try {
-        const response = await $fetch<IAnalysisResult>('/api/analyse', {
+        const response = await $fetch<IAnalysisResult & { id: string }>('/api/analyse', {
             method: 'POST',
             body: input,
         });
@@ -95,7 +95,8 @@ async function analyse(input: IAnalysisInput): Promise<void> {
         // Optimistically prepend the summary row to history
         // The full result is already in `result` for the current view
         const entry: IHistoryEntry = {
-            id: (response as IAnalysisResult & { id?: string }).id ?? '',
+            id: response.id,
+            result: response,
             candidateName: response.candidate.name ?? 'Unknown Candidate',
             candidateRole: response.candidate.currentRole ?? null,
             roleName: extractRoleName(input.jobDescription),

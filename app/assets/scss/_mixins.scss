@@ -1,6 +1,14 @@
+// ── Banner/Box ─────────────────────────────────────────────────────────────
+@mixin banner-box($bg: var(--paper-warm), $border: 1px solid var(--paper-dark), $radius: var(--radius), $padding: 1.25rem 1.5rem) {
+    background: $bg;
+    border: $border;
+    border-radius: $radius;
+    padding: $padding;
+}
+
 // ── Card ─────────────────────────────────────────────────────────────────────
 @mixin card {
-    background: #fff;
+    background: var(--white);
     border: 1px solid var(--paper-dark);
     border-radius: var(--radius);
     box-shadow: var(--shadow);
@@ -61,7 +69,6 @@
     border: 1px solid var(--paper-dark);
     border-radius: var(--radius);
     cursor: pointer;
-    font-family: 'DM Sans', sans-serif;
     transition: border-color 0.15s;
 
     &:hover {
@@ -72,15 +79,19 @@
 // ── Primary button ───────────────────────────────────────────────────────────
 @mixin primary-btn {
     background: var(--accent);
-    color: #fff;
+    color: var(--white);
     border: none;
     border-radius: var(--radius);
     cursor: pointer;
-    font-family: 'DM Sans', sans-serif;
     transition: opacity 0.15s;
 
-    &:not(:disabled):hover { opacity: 0.88; }
-    &:disabled { opacity: 0.45; cursor: not-allowed; }
+    &:not(:disabled):hover {
+        opacity: 0.88;
+    }
+    &:disabled {
+        opacity: 0.45;
+        cursor: not-allowed;
+    }
 }
 
 // ── Text truncate ────────────────────────────────────────────────────────────
@@ -88,4 +99,11 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+}
+
+// ── Flex column full height ──────────────────────────────────────────────────
+@mixin flex-col-full {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
 }

@@ -2,9 +2,7 @@
 
 // ─── Shell ────────────────────────────────────────────────────────────────────
 .admin-shell {
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
+    @include flex-col-full;
 }
 
 // ─── Content ──────────────────────────────────────────────────────────────────
@@ -36,9 +34,9 @@
 // ─── States ───────────────────────────────────────────────────────────────────
 .loading-state,
 .error-state {
+    @include banner-box($padding: 3rem 0);
     font-size: 0.875rem;
     color: var(--ink-muted);
-    padding: 3rem 0;
     text-align: center;
 }
 

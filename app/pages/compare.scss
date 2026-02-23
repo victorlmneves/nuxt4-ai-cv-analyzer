@@ -2,9 +2,7 @@
 
 /* ── Shell ───────────────────────────────────────────────────── */
 .compare-shell {
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
+    @include flex-col-full;
 }
 
 /* ── Main ────────────────────────────────────────────────────── */
@@ -68,10 +66,8 @@
 }
 
 /* ── CV slot ─────────────────────────────────────────────────── */
-.cv-slot {
-    border: 1px solid var(--paper-dark);
-    border-radius: var(--radius);
-    background: var(--paper-warm);
+ .cv-slot {
+    @include banner-box;
     display: flex;
     flex-direction: column;
     overflow: hidden;
@@ -338,11 +334,8 @@
 }
 
 /* ── Recommendation banner ───────────────────────────────────── */
-.recommendation-banner {
-    border: 1px solid var(--paper-dark);
-    border-radius: var(--radius);
-    background: var(--paper-warm);
-    padding: 1.25rem 1.5rem;
+ .recommendation-banner {
+    @include banner-box;
     margin-bottom: 2rem;
 
     &__label {

@@ -227,24 +227,24 @@ const providers = ['anthropic', 'openai', 'gemini'] as const;
     <div class="app-shell">
         <!-- ── Header ──────────────────────────────────────────────── -->
         <header class="app-header">
-            <div class="header-inner">
-                <div class="brand">
-                    <span class="brand-mark font-serif">CV</span>
-                    <span class="brand-name font-serif">Analyst</span>
-                    <span class="brand-tag font-mono">by recruitr</span>
+            <div class="app-header__inner">
+                <div class="app-header__brand">
+                    <span class="brand__mark font-serif">CV</span>
+                    <span class="brand__name font-serif">Analyst</span>
+                    <span class="brand__tag font-mono">by recruitr</span>
                 </div>
 
-                <nav class="header-nav">
+                <nav class="app-header__nav">
                     <NuxtLink v-if="extendedUser?.role === 'admin'" to="/admin" class="nav-btn">▤ Admin</NuxtLink>
 
-                    <button class="nav-btn" :class="{ active: showHistory }" @click="showHistory = !showHistory">
+                    <button class="nav-btn" :class="{ 'nav-btn--active': showHistory }" @click="showHistory = !showHistory">
                         History
-                        <span v-if="history.length > 0" class="badge">{{ history.length }}</span>
+                        <span v-if="history.length > 0" class="nav-btn__badge">{{ history.length }}</span>
                     </button>
 
                     <div class="user-chip">
-                        <span class="user-name">{{ extendedUser?.name?.split(' ')[0] }}</span>
-                        <a href="/auth/logout" class="signout-btn" title="Sign out">⎋</a>
+                        <span class="user-chip__name">{{ extendedUser?.name?.split(' ')[0] }}</span>
+                        <a href="/auth/logout" class="user-chip__signout" title="Sign out">⎋</a>
                     </div>
                 </nav>
             </div>
@@ -253,40 +253,40 @@ const providers = ['anthropic', 'openai', 'gemini'] as const;
         <!-- ── History sidebar ────────────────────────────────────── -->
         <Transition name="slide">
             <aside v-if="showHistory" class="history-sidebar">
-                <div class="sidebar-header">
+                <div class="history-sidebar__header">
                     <h3 class="font-serif">Previous Analyses</h3>
 
-                    <div class="sidebar-actions">
-                        <button v-if="history.length > 0" class="text-btn danger" @click="clearHistory">Clear all</button>
-                        <button class="close-btn" @click="showHistory = false">✕</button>
+                    <div class="history-sidebar__actions">
+                        <button v-if="history.length > 0" class="text-btn text-btn--danger" @click="clearHistory">Clear all</button>
+                        <button class="history-sidebar__close" @click="showHistory = false">✕</button>
                     </div>
                 </div>
 
-                <div v-if="isHistoryLoading" class="sidebar-loading">
-                    <div v-for="i in 3" :key="i" class="skeleton-row">
-                        <div class="skeleton skeleton-name" />
-                        <div class="skeleton skeleton-meta" />
+                <div v-if="isHistoryLoading" class="history-sidebar__loading">
+                    <div v-for="i in 3" :key="i" class="history-sidebar__skeleton-row">
+                        <div class="skeleton skeleton--name" />
+                        <div class="skeleton skeleton--meta" />
                     </div>
                 </div>
 
-                <div v-else-if="history.length === 0" class="sidebar-empty">
+                <div v-else-if="history.length === 0" class="history-sidebar__empty">
                     <p>No analyses yet.</p>
                 </div>
 
                 <ul v-else class="history-list">
-                    <li v-for="entry in history" :key="entry.id" class="history-item" @click="loadEntry(entry)">
-                        <div class="history-item-main">
-                            <strong class="history-candidate">{{ entry.candidateName }}</strong>
-                            <span class="history-role">{{ entry.roleName }}</span>
+                    <li v-for="entry in history" :key="entry.id" class="history-list__item" @click="loadEntry(entry)">
+                        <div class="history-list__item-body">
+                            <strong class="history-list__candidate">{{ entry.candidateName }}</strong>
+                            <span class="history-list__role">{{ entry.roleName }}</span>
                         </div>
 
-                        <div class="history-item-meta">
-                            <span class="score-pill font-mono" :style="{ color: fitScoreColor(entry.overallScore) }">
+                        <div class="history-list__item-meta">
+                            <span class="history-list__score font-mono" :style="{ color: fitScoreColor(entry.overallScore) }">
                                 {{ entry.overallScore }}%
                             </span>
-                            <span class="history-date font-mono">{{ formatDate(entry.createdAt) }}</span>
-                            <button class="edit-btn" title="Edit analysis inputs" @click.stop="editEntry(entry)">✎</button>
-                            <button class="delete-btn" title="Delete analysis" @click.stop="deleteFromHistory(entry.id)">✕</button>
+                            <span class="history-list__date font-mono">{{ formatDate(entry.createdAt) }}</span>
+                            <button class="history-list__edit" title="Edit analysis inputs" @click.stop="editEntry(entry)">✎</button>
+                            <button class="history-list__delete" title="Delete analysis" @click.stop="deleteFromHistory(entry.id)">✕</button>
                         </div>
                     </li>
                 </ul>
@@ -294,35 +294,35 @@ const providers = ['anthropic', 'openai', 'gemini'] as const;
         </Transition>
 
         <Transition name="fade">
-            <div v-if="showHistory" class="sidebar-backdrop" @click="showHistory = false" />
+            <div v-if="showHistory" class="history-sidebar__backdrop" @click="showHistory = false" />
         </Transition>
 
         <!-- ── Main ───────────────────────────────────────────────── -->
         <main class="main-content">
             <!-- Input panel — shown when no result -->
             <section v-if="!result && !isLoading" class="input-panel animate-fade-up">
-                <div class="panel-intro">
-                    <h1 class="panel-title font-serif">
+                <div class="input-panel__intro">
+                    <h1 class="input-panel__title font-serif">
                         CV Intelligence
                         <br />
                         <em>for modern recruiters</em>
                     </h1>
-                    <p class="panel-subtitle">
+                    <p class="input-panel__subtitle">
                         Paste a CV and a job description. Get fit scores, tech stack analysis, red flags, and tailored interview questions —
                         in seconds.
                     </p>
                 </div>
 
-                <div class="input-grid">
+                <div class="input-panel__grid">
                     <!-- CV input -->
                     <div class="input-card">
-                        <div class="input-card-header">
-                            <label class="input-label">Candidate CV</label>
-                            <div class="input-tabs">
-                                <button class="tab-btn" :class="{ active: cvInputMode === 'paste' }" @click="cvInputMode = 'paste'">
+                        <div class="input-card__header">
+                            <label class="input-card__label">Candidate CV</label>
+                            <div class="input-card__tabs">
+                                <button class="tab-btn" :class="{ 'tab-btn--active': cvInputMode === 'paste' }" @click="cvInputMode = 'paste'">
                                     Paste
                                 </button>
-                                <button class="tab-btn" :class="{ active: cvInputMode === 'upload' }" @click="cvInputMode = 'upload'">
+                                <button class="tab-btn" :class="{ 'tab-btn--active': cvInputMode === 'upload' }" @click="cvInputMode = 'upload'">
                                     Upload
                                 </button>
                             </div>
@@ -339,16 +339,16 @@ const providers = ['anthropic', 'openai', 'gemini'] as const;
                         <div
                             v-else
                             class="dropzone"
-                            :class="{ 'drag-over': isDraggingOver }"
+                            :class="{ 'dropzone--drag-over': isDraggingOver }"
                             @dragover.prevent="isDraggingOver = true"
                             @dragleave="isDraggingOver = false"
                             @drop.prevent="onDrop"
                         >
-                            <input id="cv-file" type="file" accept=".txt,.pdf,.docx" class="file-input" @change="onFileInput" />
+                            <input id="cv-file" type="file" accept=".txt,.pdf,.docx" class="dropzone__file-input" @change="onFileInput" />
 
-                            <label for="cv-file" class="dropzone-label">
-                                <span class="dropzone-icon">↑</span>
-                                <span v-if="uploadedFileName" class="dropzone-filename font-mono">
+                            <label for="cv-file" class="dropzone__label">
+                                <span class="dropzone__icon">↑</span>
+                                <span v-if="uploadedFileName" class="dropzone__filename font-mono">
                                     {{ uploadedFileName }}
                                 </span>
                                 <span v-else>
@@ -363,8 +363,8 @@ const providers = ['anthropic', 'openai', 'gemini'] as const;
 
                     <!-- JD input -->
                     <div class="input-card">
-                        <div class="input-card-header">
-                            <label class="input-label">Job Description</label>
+                        <div class="input-card__header">
+                            <label class="input-card__label">Job Description</label>
                         </div>
 
                         <textarea
@@ -378,21 +378,21 @@ const providers = ['anthropic', 'openai', 'gemini'] as const;
 
                 <!-- Provider selector -->
                 <div class="provider-row">
-                    <span class="provider-label">AI provider</span>
+                    <span class="provider-row__label">AI provider</span>
 
-                    <div class="provider-toggle">
+                    <div class="provider-row__toggle">
                         <button
                             v-for="p in providers"
                             :key="p"
-                            class="provider-btn"
-                            :class="{ active: provider === p }"
+                            class="provider-row__btn"
+                            :class="{ 'provider-btn--active': provider === p }"
                             @click="provider = p"
                         >
                             {{ providerLabel(p) }}
                         </button>
                     </div>
 
-                    <button class="submit-btn" :disabled="!cvText.trim() || !jobDescription.trim()" @click="submit">
+                    <button class="provider-row__submit" :disabled="!cvText.trim() || !jobDescription.trim()" @click="submit">
                         Analyse candidate →
                     </button>
                 </div>
@@ -402,66 +402,66 @@ const providers = ['anthropic', 'openai', 'gemini'] as const;
 
             <!-- Loading state -->
             <section v-if="isLoading" class="loading-panel animate-fade-in">
-                <div class="loading-inner">
-                    <div class="loading-icon font-serif">⟳</div>
-                    <h2 class="loading-title font-serif">Analysing candidate…</h2>
-                    <p class="loading-sub">Reading CV, scoring fit, generating questions</p>
+                <div class="loading-panel__inner">
+                    <div class="loading-panel__icon font-serif">⟳</div>
+                    <h2 class="loading-panel__title font-serif">Analysing candidate…</h2>
+                    <p class="loading-panel__sub">Reading CV, scoring fit, generating questions</p>
 
                     <div class="progress-bar">
-                        <div class="progress-fill" :style="{ width: progress + '%' }" />
+                        <div class="progress-bar__fill" :style="{ width: progress + '%' }" />
                     </div>
 
-                    <span class="progress-label font-mono">{{ Math.round(progress) }}%</span>
+                    <span class="progress-bar__label font-mono">{{ Math.round(progress) }}%</span>
                 </div>
             </section>
 
             <!-- Results -->
             <section v-if="result && !isLoading" class="results-panel animate-fade-up">
                 <!-- Results header -->
-                <div class="results-header">
-                    <button class="back-btn" @click="reset">← New analysis</button>
+                <div class="results-panel__header">
+                    <button class="results-panel__back" @click="reset">← New analysis</button>
 
-                    <div class="results-meta">
-                        <span class="meta-provider font-mono">{{ providerLabel(result.provider) }}</span>
-                        <span class="meta-date font-mono">{{ formatDate(result.analysedAt) }}</span>
+                    <div class="results-panel__meta">
+                        <span class="results-panel__meta-provider font-mono">{{ providerLabel(result.provider) }}</span>
+                        <span class="results-panel__meta-date font-mono">{{ formatDate(result.analysedAt) }}</span>
                     </div>
                 </div>
 
                 <!-- Candidate + fit score hero -->
                 <div class="hero-card">
-                    <div class="hero-left">
-                        <div class="candidate-avatar font-serif">
+                    <div class="hero-card__left">
+                        <div class="candidate__avatar font-serif">
                             {{ result.candidate.name?.charAt(0) ?? '?' }}
                         </div>
 
-                        <div class="candidate-info">
-                            <h2 class="candidate-name font-serif">
+                        <div class="candidate__info">
+                            <h2 class="candidate__name font-serif">
                                 {{ result.candidate.name ?? 'Unknown Candidate' }}
                             </h2>
-                            <p class="candidate-role">{{ result.candidate.currentRole }}</p>
+                            <p class="candidate__role">{{ result.candidate.currentRole }}</p>
 
-                            <div class="candidate-chips">
-                                <span v-if="result.candidate.totalExperience" class="chip">
+                            <div class="candidate__chips">
+                                <span v-if="result.candidate.totalExperience" class="candidate__chip font-mono">
                                     {{ result.candidate.totalExperience }}
                                 </span>
-                                <span v-if="result.candidate.location" class="chip">
+                                <span v-if="result.candidate.location" class="candidate__chip font-mono">
                                     {{ result.candidate.location }}
                                 </span>
-                                <span v-if="result.candidate.education" class="chip">
+                                <span v-if="result.candidate.education" class="candidate__chip font-mono">
                                     {{ result.candidate.education }}
                                 </span>
                             </div>
                         </div>
                     </div>
 
-                    <div class="hero-score">
+                    <div class="hero-card__score">
                         <div class="score-ring" :style="{ '--score-color': fitScoreColor(result.fitScore.overall) }">
-                            <span class="score-number font-serif">{{ result.fitScore.overall }}</span>
-                            <span class="score-unit font-mono">/ 100</span>
+                            <span class="score-ring__number font-serif">{{ result.fitScore.overall }}</span>
+                            <span class="score-ring__unit font-mono">/ 100</span>
                         </div>
 
                         <span
-                            class="verdict-badge"
+                            class="verdict-badge font-mono"
                             :style="{
                                 color: verdictColor(result.fitScore.verdict),
                                 background: verdictColor(result.fitScore.verdict) + '18',
@@ -477,40 +477,40 @@ const providers = ['anthropic', 'openai', 'gemini'] as const;
                     <div
                         v-for="(label, key) in { technical: 'Technical', experience: 'Experience', softSkills: 'Soft Skills' }"
                         :key="key"
-                        class="score-bar-row"
+                        class="score-breakdown__row"
                     >
-                        <span class="score-bar-label">{{ label }}</span>
-                        <div class="score-bar-track">
+                        <span class="score-breakdown__label">{{ label }}</span>
+                        <div class="score-breakdown__track">
                             <div
-                                class="score-bar-fill"
+                                class="score-breakdown__fill"
                                 :style="{
                                     width: getFitScoreValue(key) + '%',
                                     background: fitScoreColor(getFitScoreValue(key)),
                                 }"
                             />
                         </div>
-                        <span class="score-bar-value font-mono">{{ getFitScoreValue(key) }}%</span>
+                        <span class="score-breakdown__value font-mono">{{ getFitScoreValue(key) }}%</span>
                     </div>
                 </div>
 
                 <!-- Summary -->
                 <div class="result-card">
-                    <h3 class="card-title font-serif">Verdict</h3>
-                    <p class="verdict-summary">{{ result.fitScore.summary }}</p>
+                    <h3 class="result-card__title font-serif">Verdict</h3>
+                    <p class="result-card__verdict-summary">{{ result.fitScore.summary }}</p>
                 </div>
 
                 <!-- Strengths & Gaps -->
                 <div class="two-col">
                     <div class="result-card">
-                        <h3 class="card-title font-serif">Strengths</h3>
-                        <ul class="bullet-list green">
+                        <h3 class="result-card__title font-serif">Strengths</h3>
+                        <ul class="bullet-list bullet-list--green">
                             <li v-for="(s, i) in result.strengths" :key="i">{{ s }}</li>
                         </ul>
                     </div>
 
                     <div class="result-card">
-                        <h3 class="card-title font-serif">Gaps</h3>
-                        <ul class="bullet-list red">
+                        <h3 class="result-card__title font-serif">Gaps</h3>
+                        <ul class="bullet-list bullet-list--red">
                             <li v-for="(g, i) in result.gaps" :key="i">{{ g }}</li>
                         </ul>
                     </div>
@@ -518,9 +518,9 @@ const providers = ['anthropic', 'openai', 'gemini'] as const;
 
                 <!-- Red flags -->
                 <div v-if="result.redFlags.length > 0" class="result-card">
-                    <h3 class="card-title font-serif">
+                    <h3 class="result-card__title font-serif">
                         Red Flags
-                        <span class="card-count font-mono">{{ result.redFlags.length }}</span>
+                        <span class="result-card__count font-mono">{{ result.redFlags.length }}</span>
                     </h3>
 
                     <div class="flags-list">
@@ -533,8 +533,8 @@ const providers = ['anthropic', 'openai', 'gemini'] as const;
                                 background: severityBg(flag.severity),
                             }"
                         >
-                            <div class="flag-header">
-                                <strong class="flag-title">{{ flag.title }}</strong>
+                            <div class="flag-item__header">
+                                <strong class="flag-item__title">{{ flag.title }}</strong>
                                 <span
                                     class="severity-badge font-mono"
                                     :style="{
@@ -545,29 +545,29 @@ const providers = ['anthropic', 'openai', 'gemini'] as const;
                                     {{ flag.severity }}
                                 </span>
                             </div>
-                            <p class="flag-desc">{{ flag.description }}</p>
+                            <p class="flag-item__desc">{{ flag.description }}</p>
                         </div>
                     </div>
                 </div>
 
                 <!-- Tech stack -->
                 <div v-if="hasAnyTechStack()" class="result-card">
-                    <h3 class="card-title font-serif">Tech Stack</h3>
+                    <h3 class="result-card__title font-serif">Tech Stack</h3>
 
                     <div class="tech-grid">
                         <div v-for="[category, skills] in techStackEntries()" :key="category" class="tech-category">
-                            <h4 class="tech-category-title font-mono">{{ category }}</h4>
+                            <h4 class="tech-category__title font-mono">{{ category }}</h4>
 
-                            <div class="skill-list">
-                                <div v-for="(skill, i) in skills" :key="i" class="skill-item">
-                                    <div class="skill-header">
-                                        <span class="skill-name">{{ skill.name }}</span>
-                                        <span class="skill-level font-mono">{{ skill.level }}</span>
+                            <div class="tech-category__skills">
+                                <div v-for="(skill, i) in skills" :key="i" class="skill">
+                                    <div class="skill__header">
+                                        <span class="skill__name">{{ skill.name }}</span>
+                                        <span class="skill__level font-mono">{{ skill.level }}</span>
                                     </div>
-                                    <div class="skill-bar">
-                                        <div class="skill-bar-fill" :style="{ width: skillLevelWidth(skill.level) }" />
+                                    <div class="skill__bar">
+                                        <div class="skill__bar-fill" :style="{ width: skillLevelWidth(skill.level) }" />
                                     </div>
-                                    <div v-if="skill.yearsOfExperience || skill.lastUsed" class="skill-meta font-mono">
+                                    <div v-if="skill.yearsOfExperience || skill.lastUsed" class="skill__meta font-mono">
                                         <span v-if="skill.yearsOfExperience">{{ skill.yearsOfExperience }}y</span>
                                         <span v-if="skill.lastUsed">last: {{ skill.lastUsed }}</span>
                                     </div>
@@ -579,33 +579,33 @@ const providers = ['anthropic', 'openai', 'gemini'] as const;
 
                 <!-- Soft skills -->
                 <div v-if="result.softSkills.length > 0" class="result-card">
-                    <h3 class="card-title font-serif">Soft Skills</h3>
+                    <h3 class="result-card__title font-serif">Soft Skills</h3>
 
                     <div class="soft-skills-grid">
-                        <div v-for="(skill, i) in result.softSkills" :key="i" class="soft-skill-item">
-                            <div class="soft-skill-header">
-                                <span class="confidence-dot" :style="{ background: confidenceDot(skill.confidence) }" />
-                                <strong class="soft-skill-name">{{ skill.name }}</strong>
-                                <span class="soft-confidence font-mono">{{ skill.confidence }}</span>
+                        <div v-for="(skill, i) in result.softSkills" :key="i" class="soft-skill">
+                            <div class="soft-skill__header">
+                                <span class="soft-skill__dot" :style="{ background: confidenceDot(skill.confidence) }" />
+                                <strong class="soft-skill__name">{{ skill.name }}</strong>
+                                <span class="soft-skill__confidence font-mono">{{ skill.confidence }}</span>
                             </div>
-                            <p class="soft-evidence">{{ skill.evidence }}</p>
+                            <p class="soft-skill__evidence">{{ skill.evidence }}</p>
                         </div>
                     </div>
                 </div>
 
                 <!-- Interview questions -->
                 <div v-if="result.interviewQuestions.length > 0" class="result-card">
-                    <h3 class="card-title font-serif">
+                    <h3 class="result-card__title font-serif">
                         Interview Questions
-                        <span class="card-count font-mono">{{ result.interviewQuestions.length }}</span>
+                        <span class="result-card__count font-mono">{{ result.interviewQuestions.length }}</span>
                     </h3>
 
                     <div class="questions-list">
-                        <div v-for="(q, i) in result.interviewQuestions" :key="i" class="question-item">
-                            <div class="question-header">
-                                <span class="question-num font-mono">{{ String(i + 1).padStart(2, '0') }}</span>
+                        <div v-for="(q, i) in result.interviewQuestions" :key="i" class="question">
+                            <div class="question__header">
+                                <span class="question__num font-mono">{{ String(i + 1).padStart(2, '0') }}</span>
                                 <span
-                                    class="question-category font-mono"
+                                    class="question__category font-mono"
                                     :style="{
                                         color: categoryColor(q.category),
                                         background: categoryBg(q.category),
@@ -613,10 +613,10 @@ const providers = ['anthropic', 'openai', 'gemini'] as const;
                                 >
                                     {{ q.category }}
                                 </span>
-                                <span class="question-target font-mono">{{ q.targetSkill }}</span>
+                                <span class="question__target font-mono">{{ q.targetSkill }}</span>
                             </div>
-                            <p class="question-text">{{ q.question }}</p>
-                            <p class="question-rationale">{{ q.rationale }}</p>
+                            <p class="question__text">{{ q.question }}</p>
+                            <p class="question__rationale">{{ q.rationale }}</p>
                         </div>
                     </div>
                 </div>
@@ -625,7 +625,9 @@ const providers = ['anthropic', 'openai', 'gemini'] as const;
     </div>
 </template>
 
-<style scoped>
+<style scoped lang="scss">
+@use '~/assets/scss/mixins' as *;
+
 /* ── Shell ───────────────────────────────────────────────────── */
 .app-shell {
     min-height: 100vh;
@@ -633,86 +635,42 @@ const providers = ['anthropic', 'openai', 'gemini'] as const;
     flex-direction: column;
 }
 
-/* ── Header ──────────────────────────────────────────────────── */
-.app-header {
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    background: var(--paper);
-    border-bottom: 1px solid var(--paper-dark);
-}
+/* header, brand, nav-btn → global in assets/scss/_shared.scss */
 
-.header-inner {
-    max-width: 1100px;
-    margin: 0 auto;
-    padding: 0 2rem;
-    height: 60px;
+/* ── User chip ───────────────────────────────────────────────── */
+.user-chip {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-}
-
-.brand {
-    display: flex;
-    align-items: baseline;
     gap: 0.5rem;
-}
-
-.brand-mark {
-    font-size: 1.5rem;
-    font-weight: 500;
-    color: var(--accent);
-    letter-spacing: -0.02em;
-}
-
-.brand-name {
-    font-size: 1.1rem;
-    font-weight: 300;
-    color: var(--ink-soft);
-}
-
-.brand-tag {
-    font-size: 0.65rem;
-    color: var(--ink-muted);
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
-    margin-left: 0.25rem;
-}
-
-/* ── Nav ─────────────────────────────────────────────────────── */
-.header-nav {
-    display: flex;
-    gap: 0.5rem;
-}
-
-.nav-btn {
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-    padding: 0.35rem 0.9rem;
+    padding: 0.3rem 0.75rem;
     border: 1px solid var(--paper-dark);
     border-radius: var(--radius);
-    background: transparent;
-    color: var(--ink-soft);
-    font-size: 0.82rem;
-    cursor: pointer;
-    transition: all 0.15s;
+    background: var(--paper-warm);
+
+    &__name {
+        font-size: 0.8rem;
+        color: var(--ink-soft);
+    }
+
+    &__signout {
+        font-size: 0.85rem;
+        color: var(--ink-muted);
+        text-decoration: none;
+        line-height: 1;
+        transition: color 0.15s;
+
+        &:hover { color: var(--red); }
+    }
 }
 
-.nav-btn:hover,
-.nav-btn.active {
-    border-color: var(--ink-soft);
-    color: var(--ink);
-}
+/* ── Text button ─────────────────────────────────────────────── */
+.text-btn {
+    @include ghost-btn;
+    font-size: 0.78rem;
+    color: var(--ink-muted);
+    padding: 0;
 
-.badge {
-    background: var(--accent);
-    color: #fff;
-    font-size: 0.65rem;
-    font-family: 'DM Mono', monospace;
-    padding: 0.1rem 0.4rem;
-    border-radius: 999px;
-    line-height: 1.4;
+    &--danger:hover { color: var(--red); }
 }
 
 /* ── History sidebar ─────────────────────────────────────────── */
@@ -728,202 +686,134 @@ const providers = ['anthropic', 'openai', 'gemini'] as const;
     display: flex;
     flex-direction: column;
     box-shadow: var(--shadow-lg);
+
+    &__header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 1.25rem 1.5rem;
+        border-bottom: 1px solid var(--paper-dark);
+
+        h3 {
+            font-size: 1rem;
+            font-weight: 500;
+        }
+    }
+
+    &__actions {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    &__close {
+        @include ghost-btn;
+        font-size: 1rem;
+        color: var(--ink-muted);
+
+        &:hover { color: var(--ink); }
+    }
+
+    &__loading { padding: 0.5rem 0; }
+
+    &__skeleton-row {
+        display: flex;
+        flex-direction: column;
+        gap: 0.4rem;
+        padding: 1rem 1.5rem;
+        border-bottom: 1px solid var(--paper-warm);
+    }
+
+    &__empty {
+        padding: 2rem 1.5rem;
+        color: var(--ink-muted);
+        font-size: 0.875rem;
+    }
 }
 
-.sidebar-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 1.25rem 1.5rem;
-    border-bottom: 1px solid var(--paper-dark);
-}
-
-.sidebar-header h3 {
-    font-size: 1rem;
-    font-weight: 500;
-}
-
-.sidebar-actions {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-}
-
-.text-btn {
-    background: none;
-    border: none;
-    font-size: 0.78rem;
-    cursor: pointer;
-    color: var(--ink-muted);
-    padding: 0;
-}
-
-.text-btn.danger:hover {
-    color: var(--red);
-}
-
-.close-btn {
-    background: none;
-    border: none;
-    font-size: 1rem;
-    cursor: pointer;
-    color: var(--ink-muted);
-    line-height: 1;
-}
-
-.close-btn:hover {
-    color: var(--ink);
-}
-
-.user-chip {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.3rem 0.75rem;
-    border: 1px solid var(--paper-dark);
-    border-radius: var(--radius);
-    background: var(--paper-warm);
-}
-
-.user-name {
-    font-size: 0.8rem;
-    color: var(--ink-soft);
-}
-
-.signout-btn {
-    font-size: 0.85rem;
-    color: var(--ink-muted);
-    text-decoration: none;
-    line-height: 1;
-    transition: color 0.15s;
-}
-
-.signout-btn:hover {
-    color: var(--red);
-}
-
-.sidebar-loading {
-    padding: 0.5rem 0;
-}
-
-.skeleton-row {
-    display: flex;
-    flex-direction: column;
-    gap: 0.4rem;
-    padding: 1rem 1.5rem;
-    border-bottom: 1px solid var(--paper-warm);
-}
-
+/* ── Skeleton ───────────────────────────────────────────────── */
 .skeleton {
     border-radius: var(--radius);
     background: linear-gradient(90deg, var(--paper-warm) 25%, var(--paper-dark) 50%, var(--paper-warm) 75%);
     background-size: 200% auto;
     animation: shimmer 1.4s linear infinite;
+
+    &--name { height: 13px; width: 70%; }
+    &--meta { height: 10px; width: 45%; }
 }
 
-.skeleton-name {
-    height: 13px;
-    width: 70%;
-}
-
-.skeleton-meta {
-    height: 10px;
-    width: 45%;
-}
-
-.sidebar-empty {
-    padding: 2rem 1.5rem;
-    color: var(--ink-muted);
-    font-size: 0.875rem;
-}
-
+/* ── History list ────────────────────────────────────────────── */
 .history-list {
     list-style: none;
     overflow-y: auto;
     flex: 1;
-}
 
-.history-item {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 1rem;
-    padding: 1rem 1.5rem;
-    border-bottom: 1px solid var(--paper-warm);
-    cursor: pointer;
-    transition: background 0.15s;
-}
+    &__item {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 1rem;
+        padding: 1rem 1.5rem;
+        border-bottom: 1px solid var(--paper-warm);
+        cursor: pointer;
+        transition: background 0.15s;
 
-.history-item:hover {
-    background: var(--paper-warm);
-}
+        &:hover {
+            background: var(--paper-warm);
 
-.history-item-main {
-    display: flex;
-    flex-direction: column;
-    gap: 0.2rem;
-    overflow: hidden;
-}
+            .history-list__edit,
+            .history-list__delete { opacity: 1; }
+        }
+    }
 
-.history-candidate {
-    font-size: 0.875rem;
-    font-weight: 500;
-    color: var(--ink);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
+    &__item-body {
+        display: flex;
+        flex-direction: column;
+        gap: 0.2rem;
+        overflow: hidden;
+    }
 
-.history-role {
-    font-size: 0.75rem;
-    color: var(--ink-muted);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
+    &__candidate {
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: var(--ink);
+        @include truncate;
+    }
 
-.history-item-meta {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    flex-shrink: 0;
-}
+    &__role {
+        font-size: 0.75rem;
+        color: var(--ink-muted);
+        @include truncate;
+    }
 
-.score-pill {
-    font-size: 0.75rem;
-    font-weight: 500;
-}
+    &__item-meta {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        flex-shrink: 0;
+    }
 
-.history-date {
-    font-size: 0.7rem;
-    color: var(--ink-muted);
-}
+    &__score {
+        font-size: 0.75rem;
+        font-weight: 500;
+    }
 
-.edit-btn,
-.delete-btn {
-    background: none;
-    border: none;
-    font-size: 0.85rem;
-    cursor: pointer;
-    color: var(--ink-muted);
-    opacity: 0;
-    transition:
-        opacity 0.15s,
-        color 0.15s;
-    padding: 0.2rem;
-}
+    &__date {
+        font-size: 0.7rem;
+        color: var(--ink-muted);
+    }
 
-.history-item:hover .edit-btn,
-.history-item:hover .delete-btn {
-    opacity: 1;
-}
+    &__edit,
+    &__delete {
+        @include ghost-btn;
+        font-size: 0.85rem;
+        color: var(--ink-muted);
+        opacity: 0;
+        padding: 0.2rem;
+    }
 
-.edit-btn:hover {
-    color: var(--accent);
-}
-
-.delete-btn:hover {
-    color: var(--red);
+    &__edit:hover { color: var(--accent); }
+    &__delete:hover { color: var(--red); }
 }
 
 /* ── Sidebar transitions ─────────────────────────────────────── */
@@ -937,7 +827,7 @@ const providers = ['anthropic', 'openai', 'gemini'] as const;
     transform: translateX(100%);
 }
 
-.sidebar-backdrop {
+.history-sidebar__backdrop {
     position: fixed;
     inset: 0;
     z-index: 150;
@@ -968,73 +858,59 @@ const providers = ['anthropic', 'openai', 'gemini'] as const;
     display: flex;
     flex-direction: column;
     gap: 2rem;
-}
 
-.panel-intro {
-    max-width: 600px;
-}
+    &__intro { max-width: 600px; }
 
-.panel-title {
-    font-size: 2.5rem;
-    font-weight: 300;
-    line-height: 1.2;
-    color: var(--ink);
-    margin-bottom: 0.75rem;
-}
+    &__title {
+        font-size: 2.5rem;
+        font-weight: 300;
+        line-height: 1.2;
+        color: var(--ink);
+        margin-bottom: 0.75rem;
 
-.panel-title em {
-    color: var(--accent);
-    font-style: italic;
-}
+        em { color: var(--accent); font-style: italic; }
+    }
 
-.panel-subtitle {
-    color: var(--ink-muted);
-    font-size: 0.95rem;
-    line-height: 1.7;
-}
+    &__subtitle {
+        color: var(--ink-muted);
+        font-size: 0.95rem;
+        line-height: 1.7;
+    }
 
-/* ── Input grid ──────────────────────────────────────────────── */
-.input-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1.5rem;
-}
+    &__grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
 
-@media (width <= 700px) {
-    .input-grid {
-        grid-template-columns: 1fr;
+        @media (width <= 700px) { grid-template-columns: 1fr; }
     }
 }
 
+/* ── Input card ──────────────────────────────────────────────── */
 .input-card {
-    background: #fff;
-    border: 1px solid var(--paper-dark);
-    border-radius: var(--radius);
+    @include card;
     overflow: hidden;
-    box-shadow: var(--shadow);
+
+    &__header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.875rem 1rem;
+        border-bottom: 1px solid var(--paper-warm);
+    }
+
+    &__label {
+        font-size: 0.78rem;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--ink-muted);
+    }
+
+    &__tabs { display: flex; gap: 0.25rem; }
 }
 
-.input-card-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0.875rem 1rem;
-    border-bottom: 1px solid var(--paper-warm);
-}
-
-.input-label {
-    font-size: 0.78rem;
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    color: var(--ink-muted);
-}
-
-.input-tabs {
-    display: flex;
-    gap: 0.25rem;
-}
-
+/* ── Tab button ──────────────────────────────────────────────── */
 .tab-btn {
     padding: 0.25rem 0.6rem;
     border: 1px solid transparent;
@@ -1044,14 +920,15 @@ const providers = ['anthropic', 'openai', 'gemini'] as const;
     cursor: pointer;
     color: var(--ink-muted);
     transition: all 0.15s;
+
+    &--active {
+        border-color: var(--paper-dark);
+        color: var(--ink);
+        background: var(--paper-warm);
+    }
 }
 
-.tab-btn.active {
-    border-color: var(--paper-dark);
-    color: var(--ink);
-    background: var(--paper-warm);
-}
-
+/* ── Text input ──────────────────────────────────────────────── */
 .text-input {
     width: 100%;
     padding: 1rem;
@@ -1064,10 +941,8 @@ const providers = ['anthropic', 'openai', 'gemini'] as const;
     font-family: 'DM Mono', monospace;
     font-weight: 300;
     outline: none;
-}
 
-.text-input::placeholder {
-    color: var(--ink-muted);
+    &::placeholder { color: var(--ink-muted); }
 }
 
 /* ── Dropzone ────────────────────────────────────────────────── */
@@ -1078,38 +953,36 @@ const providers = ['anthropic', 'openai', 'gemini'] as const;
     align-items: center;
     justify-content: center;
     transition: background 0.15s;
-}
 
-.dropzone.drag-over {
-    background: var(--accent-pale);
-}
+    &--drag-over { background: var(--accent-pale); }
 
-.file-input {
-    position: absolute;
-    inset: 0;
-    opacity: 0;
-    cursor: pointer;
-}
+    &__file-input {
+        position: absolute;
+        inset: 0;
+        opacity: 0;
+        cursor: pointer;
+    }
 
-.dropzone-label {
-    text-align: center;
-    color: var(--ink-muted);
-    font-size: 0.875rem;
-    line-height: 1.8;
-    cursor: pointer;
-    pointer-events: none;
-}
+    &__label {
+        text-align: center;
+        color: var(--ink-muted);
+        font-size: 0.875rem;
+        line-height: 1.8;
+        cursor: pointer;
+        pointer-events: none;
+    }
 
-.dropzone-icon {
-    display: block;
-    font-size: 2rem;
-    margin-bottom: 0.5rem;
-    color: var(--paper-dark);
-}
+    &__icon {
+        display: block;
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+        color: var(--paper-dark);
+    }
 
-.dropzone-filename {
-    font-size: 0.75rem;
-    color: var(--green);
+    &__filename {
+        font-size: 0.75rem;
+        color: var(--green);
+    }
 }
 
 /* ── Provider row ────────────────────────────────────────────── */
@@ -1118,64 +991,57 @@ const providers = ['anthropic', 'openai', 'gemini'] as const;
     align-items: center;
     gap: 1rem;
     flex-wrap: wrap;
+
+    &__label {
+        font-size: 0.78rem;
+        color: var(--ink-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+    }
+
+    &__toggle {
+        display: flex;
+        border: 1px solid var(--paper-dark);
+        border-radius: var(--radius);
+        overflow: hidden;
+    }
+
+    &__btn {
+        padding: 0.5rem 1rem;
+        border: none;
+        background: transparent;
+        font-size: 0.82rem;
+        cursor: pointer;
+        color: var(--ink-muted);
+        transition: all 0.15s;
+        border-right: 1px solid var(--paper-dark);
+
+        &:last-child { border-right: none; }
+
+        &--active {
+            background: var(--ink);
+            color: var(--paper);
+        }
+    }
+
+    &__submit {
+        margin-left: auto;
+        padding: 0.65rem 1.5rem;
+        background: var(--accent);
+        color: #fff;
+        border: none;
+        border-radius: var(--radius);
+        font-size: 0.875rem;
+        cursor: pointer;
+        transition: opacity 0.15s;
+        font-family: 'DM Sans', sans-serif;
+
+        &:disabled { opacity: 0.35; cursor: not-allowed; }
+        &:not(:disabled):hover { opacity: 0.88; }
+    }
 }
 
-.provider-label {
-    font-size: 0.78rem;
-    color: var(--ink-muted);
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-}
-
-.provider-toggle {
-    display: flex;
-    border: 1px solid var(--paper-dark);
-    border-radius: var(--radius);
-    overflow: hidden;
-}
-
-.provider-btn {
-    padding: 0.5rem 1rem;
-    border: none;
-    background: transparent;
-    font-size: 0.82rem;
-    cursor: pointer;
-    color: var(--ink-muted);
-    transition: all 0.15s;
-    border-right: 1px solid var(--paper-dark);
-}
-
-.provider-btn:last-child {
-    border-right: none;
-}
-
-.provider-btn.active {
-    background: var(--ink);
-    color: var(--paper);
-}
-
-.submit-btn {
-    margin-left: auto;
-    padding: 0.65rem 1.5rem;
-    background: var(--accent);
-    color: #fff;
-    border: none;
-    border-radius: var(--radius);
-    font-size: 0.875rem;
-    cursor: pointer;
-    transition: opacity 0.15s;
-    font-family: 'DM Sans', sans-serif;
-}
-
-.submit-btn:disabled {
-    opacity: 0.35;
-    cursor: not-allowed;
-}
-
-.submit-btn:not(:disabled):hover {
-    opacity: 0.88;
-}
-
+/* ── Error message ───────────────────────────────────────────── */
 .error-msg {
     color: var(--red);
     font-size: 0.875rem;
@@ -1185,58 +1051,47 @@ const providers = ['anthropic', 'openai', 'gemini'] as const;
     border: 1px solid var(--red);
 }
 
-/* ── Loading ─────────────────────────────────────────────────── */
+/* ── Loading panel ───────────────────────────────────────────── */
 .loading-panel {
     display: flex;
     align-items: center;
     justify-content: center;
     min-height: 50vh;
+
+    &__inner {
+        text-align: center;
+        max-width: 360px;
+        width: 100%;
+    }
+
+    &__icon {
+        font-size: 2.5rem;
+        color: var(--accent);
+        display: block;
+        margin-bottom: 1rem;
+        animation: pulse 2s infinite;
+    }
+
+    &__title {
+        font-size: 1.5rem;
+        font-weight: 300;
+        margin-bottom: 0.4rem;
+    }
+
+    &__sub {
+        font-size: 0.82rem;
+        color: var(--ink-muted);
+        margin-bottom: 1.5rem;
+    }
 }
 
-.loading-inner {
-    text-align: center;
-    max-width: 360px;
-    width: 100%;
-}
-
-.loading-icon {
-    font-size: 2.5rem;
-    color: var(--accent);
-    display: block;
-    margin-bottom: 1rem;
-    animation: pulse 2s infinite;
-}
-
-.loading-title {
-    font-size: 1.5rem;
-    font-weight: 300;
-    margin-bottom: 0.4rem;
-}
-
-.loading-sub {
-    font-size: 0.82rem;
-    color: var(--ink-muted);
-    margin-bottom: 1.5rem;
-}
-
+/* ── Progress bar ────────────────────────────────────────────── */
 .progress-bar {
-    height: 3px;
-    background: var(--paper-dark);
-    border-radius: 2px;
-    overflow: hidden;
+    @include bar-track(3px, var(--paper-dark));
     margin-bottom: 0.5rem;
-}
 
-.progress-fill {
-    height: 100%;
-    background: var(--accent);
-    border-radius: 2px;
-    transition: width 0.3s ease;
-}
-
-.progress-label {
-    font-size: 0.7rem;
-    color: var(--ink-muted);
+    &__fill { @include bar-fill(var(--accent), 0.3s); }
+    &__label { font-size: 0.7rem; color: var(--ink-muted); }
 }
 
 /* ── Results ─────────────────────────────────────────────────── */
@@ -1244,107 +1099,91 @@ const providers = ['anthropic', 'openai', 'gemini'] as const;
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
-}
 
-.results-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-}
+    &__header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
 
-.back-btn {
-    background: none;
-    border: none;
-    font-size: 0.875rem;
-    color: var(--ink-muted);
-    cursor: pointer;
-    padding: 0;
-    transition: color 0.15s;
-}
+    &__back {
+        @include ghost-btn;
+        font-size: 0.875rem;
+        color: var(--ink-muted);
+        padding: 0;
 
-.back-btn:hover {
-    color: var(--ink);
-}
+        &:hover { color: var(--ink); }
+    }
 
-.results-meta {
-    display: flex;
-    gap: 1rem;
-    font-size: 0.75rem;
-    color: var(--ink-muted);
+    &__meta {
+        display: flex;
+        gap: 1rem;
+        font-size: 0.75rem;
+        color: var(--ink-muted);
+    }
 }
 
 /* ── Hero card ───────────────────────────────────────────────── */
 .hero-card {
-    background: #fff;
-    border: 1px solid var(--paper-dark);
-    border-radius: var(--radius);
+    @include card;
     padding: 2rem;
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 2rem;
-    box-shadow: var(--shadow);
+
+    &__left {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+    }
+
+    &__score {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.6rem;
+        flex-shrink: 0;
+    }
 }
 
-.hero-left {
-    display: flex;
-    align-items: center;
-    gap: 1.5rem;
-}
+/* ── Candidate ───────────────────────────────────────────────── */
+.candidate {
+    &__avatar {
+        @include avatar(60px, 2px);
+        font-size: 1.5rem;
+    }
 
-.candidate-avatar {
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    background: var(--paper-warm);
-    border: 2px solid var(--paper-dark);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.5rem;
-    font-weight: 500;
-    color: var(--ink-soft);
-    flex-shrink: 0;
-}
+    &__name {
+        font-size: 1.4rem;
+        font-weight: 500;
+        color: var(--ink);
+        margin-bottom: 0.2rem;
+    }
 
-.candidate-name {
-    font-size: 1.4rem;
-    font-weight: 500;
-    color: var(--ink);
-    margin-bottom: 0.2rem;
-}
+    &__role {
+        font-size: 0.875rem;
+        color: var(--ink-soft);
+        margin-bottom: 0.6rem;
+    }
 
-.candidate-role {
-    font-size: 0.875rem;
-    color: var(--ink-soft);
-    margin-bottom: 0.6rem;
-}
+    &__chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.4rem;
+    }
 
-.candidate-chips {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.4rem;
-}
-
-.chip {
-    font-size: 0.7rem;
-    padding: 0.2rem 0.6rem;
-    background: var(--paper-warm);
-    border: 1px solid var(--paper-dark);
-    border-radius: 999px;
-    color: var(--ink-muted);
-    font-family: 'DM Mono', monospace;
+    &__chip {
+        @include pill-badge;
+        font-size: 0.7rem;
+        padding: 0.2rem 0.6rem;
+        background: var(--paper-warm);
+        border: 1px solid var(--paper-dark);
+        color: var(--ink-muted);
+    }
 }
 
 /* ── Score ring ──────────────────────────────────────────────── */
-.hero-score {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.6rem;
-    flex-shrink: 0;
-}
-
 .score-ring {
     width: 90px;
     height: 90px;
@@ -1354,107 +1193,96 @@ const providers = ['anthropic', 'openai', 'gemini'] as const;
     flex-direction: column;
     align-items: center;
     justify-content: center;
+
+    &__number {
+        font-size: 1.75rem;
+        font-weight: 500;
+        line-height: 1;
+        color: var(--ink);
+    }
+
+    &__unit {
+        font-size: 0.6rem;
+        color: var(--ink-muted);
+    }
 }
 
-.score-number {
-    font-size: 1.75rem;
-    font-weight: 500;
-    line-height: 1;
-    color: var(--ink);
-}
-
-.score-unit {
-    font-size: 0.6rem;
-    color: var(--ink-muted);
-}
-
+/* ── Verdict badge ───────────────────────────────────────────── */
 .verdict-badge {
+    @include pill-badge;
     font-size: 0.72rem;
     font-weight: 500;
     padding: 0.25rem 0.75rem;
-    border-radius: 999px;
     text-transform: capitalize;
-    font-family: 'DM Mono', monospace;
 }
 
 /* ── Score breakdown ─────────────────────────────────────────── */
 .score-breakdown {
-    background: #fff;
-    border: 1px solid var(--paper-dark);
-    border-radius: var(--radius);
+    @include card;
     padding: 1.25rem 1.5rem;
     display: flex;
     flex-direction: column;
     gap: 0.75rem;
-    box-shadow: var(--shadow);
+
+    &__row {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    &__label {
+        width: 90px;
+        font-size: 0.8rem;
+        color: var(--ink-soft);
+        flex-shrink: 0;
+    }
+
+    &__track {
+        @include bar-track(6px);
+        flex: 1;
+    }
+
+    &__fill {
+        @include bar-fill(var(--accent), 0.6s);
+    }
+
+    &__value {
+        width: 38px;
+        font-size: 0.75rem;
+        color: var(--ink-soft);
+        text-align: right;
+        flex-shrink: 0;
+    }
 }
 
-.score-bar-row {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-}
-
-.score-bar-label {
-    width: 90px;
-    font-size: 0.8rem;
-    color: var(--ink-soft);
-    flex-shrink: 0;
-}
-
-.score-bar-track {
-    flex: 1;
-    height: 6px;
-    background: var(--paper-warm);
-    border-radius: 3px;
-    overflow: hidden;
-}
-
-.score-bar-fill {
-    height: 100%;
-    border-radius: 3px;
-    transition: width 0.6s ease;
-}
-
-.score-bar-value {
-    width: 38px;
-    font-size: 0.75rem;
-    color: var(--ink-soft);
-    text-align: right;
-    flex-shrink: 0;
-}
-
-/* ── Result cards ────────────────────────────────────────────── */
+/* ── Result card ─────────────────────────────────────────────── */
 .result-card {
-    background: #fff;
-    border: 1px solid var(--paper-dark);
-    border-radius: var(--radius);
+    @include card;
     padding: 1.5rem;
-    box-shadow: var(--shadow);
-}
 
-.card-title {
-    font-size: 1.1rem;
-    font-weight: 500;
-    color: var(--ink);
-    margin-bottom: 1rem;
-    display: flex;
-    align-items: center;
-    gap: 0.6rem;
-}
+    &__title {
+        font-size: 1.1rem;
+        font-weight: 500;
+        color: var(--ink);
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+    }
 
-.card-count {
-    font-size: 0.7rem;
-    color: var(--ink-muted);
-    background: var(--paper-warm);
-    padding: 0.1rem 0.5rem;
-    border-radius: 999px;
-}
+    &__count {
+        @include pill-badge;
+        font-size: 0.7rem;
+        color: var(--ink-muted);
+        background: var(--paper-warm);
+        padding: 0.1rem 0.5rem;
+    }
 
-.verdict-summary {
-    font-size: 0.925rem;
-    line-height: 1.75;
-    color: var(--ink-soft);
+    &__verdict-summary {
+        font-size: 0.925rem;
+        line-height: 1.75;
+        color: var(--ink-soft);
+    }
 }
 
 /* ── Two col ─────────────────────────────────────────────────── */
@@ -1462,12 +1290,8 @@ const providers = ['anthropic', 'openai', 'gemini'] as const;
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 1.5rem;
-}
 
-@media (width <= 600px) {
-    .two-col {
-        grid-template-columns: 1fr;
-    }
+    @media (width <= 600px) { grid-template-columns: 1fr; }
 }
 
 /* ── Bullet list ─────────────────────────────────────────────── */
@@ -1476,30 +1300,25 @@ const providers = ['anthropic', 'openai', 'gemini'] as const;
     display: flex;
     flex-direction: column;
     gap: 0.6rem;
-}
 
-.bullet-list li {
-    font-size: 0.875rem;
-    color: var(--ink-soft);
-    padding-left: 1.2rem;
-    position: relative;
-    line-height: 1.5;
-}
+    li {
+        font-size: 0.875rem;
+        color: var(--ink-soft);
+        padding-left: 1.2rem;
+        position: relative;
+        line-height: 1.5;
 
-.bullet-list li::before {
-    content: '→';
-    position: absolute;
-    left: 0;
-    font-size: 0.7rem;
-    top: 0.15em;
-}
+        &::before {
+            content: '→';
+            position: absolute;
+            left: 0;
+            font-size: 0.7rem;
+            top: 0.15em;
+        }
+    }
 
-.bullet-list.green li::before {
-    color: var(--green);
-}
-
-.bullet-list.red li::before {
-    color: var(--red);
+    &--green li::before { color: var(--green); }
+    &--red li::before { color: var(--red); }
 }
 
 /* ── Red flags ───────────────────────────────────────────────── */
@@ -1513,32 +1332,33 @@ const providers = ['anthropic', 'openai', 'gemini'] as const;
     border-left: 3px solid;
     border-radius: 0 var(--radius) var(--radius) 0;
     padding: 0.875rem 1rem;
+
+    &__header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 0.35rem;
+    }
+
+    &__title {
+        font-size: 0.875rem;
+        font-weight: 500;
+    }
+
+    &__desc {
+        font-size: 0.825rem;
+        color: var(--ink-soft);
+        line-height: 1.5;
+    }
 }
 
-.flag-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 0.35rem;
-}
-
-.flag-title {
-    font-size: 0.875rem;
-    font-weight: 500;
-}
-
+/* ── Severity badge ──────────────────────────────────────────── */
 .severity-badge {
+    @include pill-badge;
     font-size: 0.65rem;
     padding: 0.15rem 0.5rem;
-    border-radius: 999px;
     text-transform: uppercase;
     letter-spacing: 0.05em;
-}
-
-.flag-desc {
-    font-size: 0.825rem;
-    color: var(--ink-soft);
-    line-height: 1.5;
 }
 
 /* ── Tech stack ──────────────────────────────────────────────── */
@@ -1548,64 +1368,60 @@ const providers = ['anthropic', 'openai', 'gemini'] as const;
     gap: 1.5rem;
 }
 
-.tech-category-title {
-    font-size: 0.65rem;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--ink-muted);
-    margin-bottom: 0.75rem;
-    border-bottom: 1px solid var(--paper-warm);
-    padding-bottom: 0.4rem;
+.tech-category {
+    &__title {
+        font-size: 0.65rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--ink-muted);
+        margin-bottom: 0.75rem;
+        border-bottom: 1px solid var(--paper-warm);
+        padding-bottom: 0.4rem;
+    }
+
+    &__skills {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
 }
 
-.skill-list {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-}
-
-.skill-item {
+.skill {
     display: flex;
     flex-direction: column;
     gap: 0.25rem;
-}
 
-.skill-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-}
+    &__header {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+    }
 
-.skill-name {
-    font-size: 0.82rem;
-    font-weight: 500;
-    color: var(--ink);
-}
+    &__name {
+        font-size: 0.82rem;
+        font-weight: 500;
+        color: var(--ink);
+    }
 
-.skill-level {
-    font-size: 0.65rem;
-    color: var(--ink-muted);
-}
+    &__level {
+        font-size: 0.65rem;
+        color: var(--ink-muted);
+    }
 
-.skill-bar {
-    height: 3px;
-    background: var(--paper-warm);
-    border-radius: 2px;
-    overflow: hidden;
-}
+    &__bar {
+        @include bar-track(3px);
+    }
 
-.skill-bar-fill {
-    height: 100%;
-    background: var(--accent);
-    border-radius: 2px;
-    transition: width 0.5s ease;
-}
+    &__bar-fill {
+        @include bar-fill;
+    }
 
-.skill-meta {
-    display: flex;
-    gap: 0.75rem;
-    font-size: 0.65rem;
-    color: var(--ink-muted);
+    &__meta {
+        display: flex;
+        gap: 0.75rem;
+        font-size: 0.65rem;
+        color: var(--ink-muted);
+    }
 }
 
 /* ── Soft skills ─────────────────────────────────────────────── */
@@ -1615,43 +1431,43 @@ const providers = ['anthropic', 'openai', 'gemini'] as const;
     gap: 1rem;
 }
 
-.soft-skill-item {
+.soft-skill {
     border: 1px solid var(--paper-warm);
     border-radius: var(--radius);
     padding: 0.875rem;
     background: var(--paper);
-}
 
-.soft-skill-header {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    margin-bottom: 0.4rem;
-}
+    &__header {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 0.4rem;
+    }
 
-.confidence-dot {
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-    flex-shrink: 0;
-}
+    &__dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        flex-shrink: 0;
+    }
 
-.soft-skill-name {
-    font-size: 0.875rem;
-    font-weight: 500;
-    flex: 1;
-}
+    &__name {
+        font-size: 0.875rem;
+        font-weight: 500;
+        flex: 1;
+    }
 
-.soft-confidence {
-    font-size: 0.65rem;
-    color: var(--ink-muted);
-}
+    &__confidence {
+        font-size: 0.65rem;
+        color: var(--ink-muted);
+    }
 
-.soft-evidence {
-    font-size: 0.78rem;
-    color: var(--ink-muted);
-    line-height: 1.5;
-    font-style: italic;
+    &__evidence {
+        font-size: 0.78rem;
+        color: var(--ink-muted);
+        line-height: 1.5;
+        font-style: italic;
+    }
 }
 
 /* ── Interview questions ─────────────────────────────────────── */
@@ -1661,50 +1477,50 @@ const providers = ['anthropic', 'openai', 'gemini'] as const;
     gap: 1rem;
 }
 
-.question-item {
+.question {
     border: 1px solid var(--paper-warm);
     border-radius: var(--radius);
     padding: 1rem 1.125rem;
     background: var(--paper);
-}
 
-.question-header {
-    display: flex;
-    align-items: center;
-    gap: 0.6rem;
-    margin-bottom: 0.5rem;
-}
+    &__header {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        margin-bottom: 0.5rem;
+    }
 
-.question-num {
-    font-size: 0.65rem;
-    color: var(--ink-muted);
-    min-width: 24px;
-}
+    &__num {
+        font-size: 0.65rem;
+        color: var(--ink-muted);
+        min-width: 24px;
+    }
 
-.question-category {
-    font-size: 0.65rem;
-    padding: 0.15rem 0.5rem;
-    border-radius: 999px;
-    text-transform: capitalize;
-}
+    &__category {
+        @include pill-badge;
+        font-size: 0.65rem;
+        padding: 0.15rem 0.5rem;
+        text-transform: capitalize;
+    }
 
-.question-target {
-    font-size: 0.65rem;
-    color: var(--ink-muted);
-    margin-left: auto;
-}
+    &__target {
+        font-size: 0.65rem;
+        color: var(--ink-muted);
+        margin-left: auto;
+    }
 
-.question-text {
-    font-size: 0.9rem;
-    font-weight: 500;
-    color: var(--ink);
-    line-height: 1.5;
-    margin-bottom: 0.4rem;
-}
+    &__text {
+        font-size: 0.9rem;
+        font-weight: 500;
+        color: var(--ink);
+        line-height: 1.5;
+        margin-bottom: 0.4rem;
+    }
 
-.question-rationale {
-    font-size: 0.78rem;
-    color: var(--ink-muted);
-    line-height: 1.5;
+    &__rationale {
+        font-size: 0.78rem;
+        color: var(--ink-muted);
+        line-height: 1.5;
+    }
 }
 </style>

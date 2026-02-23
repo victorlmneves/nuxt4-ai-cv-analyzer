@@ -1,0 +1,90 @@
+@use 'mixins' as *;
+
+// ── App Header ───────────────────────────────────────────────────────────────
+// Shared between pages/index.vue and pages/admin/index.vue
+.app-header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: var(--paper);
+    border-bottom: 1px solid var(--paper-dark);
+
+    &__inner {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 0 2rem;
+        height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    &__brand {
+        display: flex;
+        align-items: baseline;
+        gap: 0.5rem;
+    }
+
+    &__nav {
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+    }
+}
+
+// ── Brand ────────────────────────────────────────────────────────────────────
+.brand {
+    &__mark {
+        font-size: 1.5rem;
+        font-weight: 500;
+        color: var(--accent);
+        letter-spacing: -0.02em;
+    }
+
+    &__name {
+        font-size: 1.1rem;
+        font-weight: 300;
+        color: var(--ink-soft);
+    }
+
+    &__tag {
+        font-size: 0.65rem;
+        color: var(--ink-muted);
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        margin-left: 0.25rem;
+        font-family: 'DM Mono', monospace;
+    }
+}
+
+// ── Nav Button ───────────────────────────────────────────────────────────────
+.nav-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.35rem 0.9rem;
+    border: 1px solid var(--paper-dark);
+    border-radius: var(--radius);
+    background: transparent;
+    color: var(--ink-soft);
+    font-size: 0.82rem;
+    font-family: 'DM Sans', sans-serif;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.15s;
+
+    &:hover,
+    &--active {
+        border-color: var(--ink-soft);
+        color: var(--ink);
+    }
+
+    &__badge {
+        @include pill-badge;
+        background: var(--accent);
+        color: #fff;
+        font-size: 0.65rem;
+        padding: 0.1rem 0.4rem;
+        line-height: 1.4;
+    }
+}

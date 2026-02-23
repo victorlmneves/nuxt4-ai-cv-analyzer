@@ -13,28 +13,28 @@ const hasError = computed(() => route.query.error === 'oauth');
 <template>
     <div class="login-shell">
         <div class="login-card">
-            <div class="login-brand">
-                <span class="brand-mark font-serif">CV</span>
-                <span class="brand-name font-serif">Analyst</span>
+            <div class="login-card__brand">
+                <span class="brand__mark font-serif">CV</span>
+                <span class="brand__name font-serif">Analyst</span>
             </div>
 
-            <h1 class="login-title font-serif">
+            <h1 class="login-card__title font-serif">
                 Sign in to
                 <br />
                 <em>your workspace</em>
             </h1>
 
-            <p class="login-sub">
+            <p class="login-card__sub">
                 AI-powered CV analysis for technical recruiters.
                 <br />
                 Sign in with your work account to continue.
             </p>
 
-            <p v-if="hasError" class="login-error">Authentication failed. Please try again.</p>
+            <p v-if="hasError" class="login-card__error">Authentication failed. Please try again.</p>
 
             <div class="oauth-buttons">
                 <a href="/auth/microsoft" class="oauth-btn microsoft-btn">
-                    <svg class="oauth-icon" viewBox="0 0 24 24" aria-hidden="true">
+                    <svg class="oauth-btn__icon" viewBox="0 0 24 24" aria-hidden="true">
                         <path fill="#F25022" d="M1 1h10v10H1z" />
                         <path fill="#7FBA00" d="M13 1h10v10H13z" />
                         <path fill="#00A4EF" d="M1 13h10v10H1z" />
@@ -44,7 +44,7 @@ const hasError = computed(() => route.query.error === 'oauth');
                 </a>
 
                 <a href="/auth/google" class="oauth-btn google-btn">
-                    <svg class="oauth-icon" viewBox="0 0 24 24" aria-hidden="true">
+                    <svg class="oauth-btn__icon" viewBox="0 0 24 24" aria-hidden="true">
                         <path
                             fill="#4285F4"
                             d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
@@ -66,7 +66,7 @@ const hasError = computed(() => route.query.error === 'oauth');
                 </a>
             </div>
 
-            <p class="login-footer">
+            <p class="login-card__footer">
                 By signing in you agree to use this tool responsibly.
                 <br />
                 Your data is scoped to your account only.
@@ -75,7 +75,10 @@ const hasError = computed(() => route.query.error === 'oauth');
     </div>
 </template>
 
-<style scoped>
+<style scoped lang="scss">
+@use '~/assets/scss/mixins' as *;
+
+/* ── Login shell ─────────────────────────────────────────────── */
 .login-shell {
     min-height: 100vh;
     display: flex;
@@ -85,68 +88,78 @@ const hasError = computed(() => route.query.error === 'oauth');
     padding: 2rem;
 }
 
+/* ── Login card ──────────────────────────────────────────────── */
 .login-card {
+    @include card;
     width: 100%;
     max-width: 400px;
-    background: #fff;
-    border: 1px solid var(--paper-dark);
-    border-radius: var(--radius);
-    padding: 3rem 2.5rem;
     box-shadow: var(--shadow-lg);
+    padding: 3rem 2.5rem;
     text-align: center;
     animation: fade-up 0.4s ease both;
+
+    &__brand {
+        display: flex;
+        align-items: baseline;
+        justify-content: center;
+        gap: 0.4rem;
+        margin-bottom: 2rem;
+    }
+
+    &__title {
+        font-size: 1.75rem;
+        font-weight: 300;
+        line-height: 1.25;
+        color: var(--ink);
+        margin-bottom: 0.75rem;
+
+        em {
+            color: var(--accent);
+            font-style: italic;
+        }
+    }
+
+    &__sub {
+        font-size: 0.875rem;
+        color: var(--ink-muted);
+        line-height: 1.6;
+        margin-bottom: 2rem;
+    }
+
+    &__error {
+        font-size: 0.825rem;
+        color: var(--red);
+        background: var(--red-pale);
+        border: 1px solid var(--red);
+        border-radius: var(--radius);
+        padding: 0.6rem 1rem;
+        margin-bottom: 1.25rem;
+    }
+
+    &__footer {
+        margin-top: 1.5rem;
+        font-size: 0.72rem;
+        color: var(--ink-muted);
+        line-height: 1.6;
+    }
 }
 
-.login-brand {
-    display: flex;
-    align-items: baseline;
-    justify-content: center;
-    gap: 0.4rem;
-    margin-bottom: 2rem;
+/* ── Brand (inside login card) ───────────────────────────────── */
+.brand {
+    &__mark {
+        font-size: 1.5rem;
+        font-weight: 500;
+        color: var(--accent);
+    }
+
+    &__name {
+        font-size: 1.1rem;
+        font-weight: 300;
+        color: var(--ink-soft);
+    }
 }
 
-.brand-mark {
-    font-size: 1.5rem;
-    font-weight: 500;
-    color: var(--accent);
-}
-
-.brand-name {
-    font-size: 1.1rem;
-    font-weight: 300;
-    color: var(--ink-soft);
-}
-
-.login-title {
-    font-size: 1.75rem;
-    font-weight: 300;
-    line-height: 1.25;
-    color: var(--ink);
-    margin-bottom: 0.75rem;
-}
-
-.login-title em {
-    color: var(--accent);
-    font-style: italic;
-}
-
-.login-sub {
-    font-size: 0.875rem;
-    color: var(--ink-muted);
-    line-height: 1.6;
-    margin-bottom: 2rem;
-}
-
-.login-error {
-    font-size: 0.825rem;
-    color: var(--red);
-    background: var(--red-pale);
-    border: 1px solid var(--red);
-    border-radius: var(--radius);
-    padding: 0.6rem 1rem;
-    margin-bottom: 1.25rem;
-}
-
+/* ── OAuth buttons ───────────────────────────────────────────── */
 .oauth-buttons {
     display: flex;
     flex-direction: column;
@@ -154,15 +167,13 @@ const hasError = computed(() => route.query.error === 'oauth');
 }
 
 .oauth-btn {
+    @include card;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 0.75rem;
     width: 100%;
     padding: 0.75rem 1.25rem;
-    background: #fff;
-    border: 1px solid var(--paper-dark);
-    border-radius: var(--radius);
     font-size: 0.9rem;
     font-weight: 500;
     color: var(--ink);
@@ -171,23 +182,16 @@ const hasError = computed(() => route.query.error === 'oauth');
     transition: all 0.15s;
     box-shadow: 0 1px 3px rgb(0 0 0 / 8%);
     font-family: 'DM Sans', sans-serif;
-}
 
-.oauth-btn:hover {
-    border-color: var(--ink-soft);
-    box-shadow: 0 2px 8px rgb(0 0 0 / 10%);
-}
+    &:hover {
+        border-color: var(--ink-soft);
+        box-shadow: 0 2px 8px rgb(0 0 0 / 10%);
+    }
 
-.oauth-icon {
-    width: 18px;
-    height: 18px;
-    flex-shrink: 0;
-}
-
-.login-footer {
-    margin-top: 1.5rem;
-    font-size: 0.72rem;
-    color: var(--ink-muted);
-    line-height: 1.6;
+    &__icon {
+        width: 18px;
+        height: 18px;
+        flex-shrink: 0;
+    }
 }
 </style>

@@ -1,0 +1,63 @@
+// ── Card ─────────────────────────────────────────────────────────────────────
+@mixin card {
+    background: #fff;
+    border: 1px solid var(--paper-dark);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+}
+
+// ── Avatar ───────────────────────────────────────────────────────────────────
+@mixin avatar($size: 40px, $border-width: 1px) {
+    width: $size;
+    height: $size;
+    border-radius: 50%;
+    background: var(--paper-warm);
+    border: $border-width solid var(--paper-dark);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 500;
+    color: var(--ink-soft);
+    flex-shrink: 0;
+}
+
+// ── Pill badge ───────────────────────────────────────────────────────────────
+@mixin pill-badge {
+    display: inline-flex;
+    align-items: center;
+    border-radius: 999px;
+    font-family: 'DM Mono', monospace;
+    white-space: nowrap;
+}
+
+// ── Bar track ────────────────────────────────────────────────────────────────
+@mixin bar-track($height: 5px, $bg: var(--paper-warm)) {
+    height: $height;
+    background: $bg;
+    border-radius: calc($height / 2);
+    overflow: hidden;
+}
+
+// ── Bar fill ─────────────────────────────────────────────────────────────────
+@mixin bar-fill($color: var(--accent), $duration: 0.5s) {
+    height: 100%;
+    background: $color;
+    border-radius: inherit;
+    transition: width $duration ease;
+}
+
+// ── Ghost button ─────────────────────────────────────────────────────────────
+@mixin ghost-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    line-height: 1;
+    transition: color 0.15s;
+}
+
+// ── Text truncate ────────────────────────────────────────────────────────────
+@mixin truncate {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}

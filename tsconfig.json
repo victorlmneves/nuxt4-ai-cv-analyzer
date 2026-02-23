@@ -8,6 +8,7 @@
         "skipLibCheck": true,
         "skipDefaultLibCheck": true,
         "noImplicitAny": false,
-        "typeRoots": ["./app/types"]
+        "types": ["node"],
+        "typeRoots": ["./node_modules/@types", "./app/types"]
     }
 }

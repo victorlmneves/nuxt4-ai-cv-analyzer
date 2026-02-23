@@ -1,6 +1,6 @@
 # CV Analyst
 
-AI-powered CV analysis tool for technical recruiting teams. Analyse candidates against job descriptions — get fit scores, tech stack breakdowns, red flags, soft skills and tailored interview questions. Built with Nuxt 4, Supabase, Drizzle ORM and nuxt-auth-utils.
+AI-powered CV analysis tool for technical recruiting teams. Analyse candidates against job descriptions — get fit scores, tech stack breakdowns, red flags, soft skills, tailored interview questions, candidate comparison, JD generation, PDF export, and admin dashboard. Built with Nuxt 4, Supabase, Drizzle ORM and nuxt-auth-utils.
 
 ## Features
 
@@ -9,6 +9,9 @@ AI-powered CV analysis tool for technical recruiting teams. Analyse candidates a
 - **Red flags** — severity-rated concerns (low / medium / high)
 - **Soft skills** — inferred from CV evidence with confidence level
 - **Interview questions** — 8–12 questions across technical, behavioural, situational and cultural categories
+- **Candidate comparison** — analyse 2–3 CVs side by side for the same role
+- **JD Generator** — generate inclusive job descriptions from recruiter notes
+- **PDF export** — download analysis as a formatted PDF
 - **3 AI providers** — Claude (Haiku), GPT-4o mini, Gemini 2.5 Flash
 - **File upload** — `.txt`, `.pdf`, `.docx`
 - **Authentication** — Google & Microsoft OAuth via `nuxt-auth-utils`; encrypted session cookies
@@ -53,12 +56,33 @@ cp .env.example .env
 # Fill in all values — see .env.example for instructions
 ```
 
-### 5. Run
+
+### 5. Database Migrations
+
+```bash
+pnpm db:generate   # generate migration files from schema changes
+pnpm db:migrate    # apply migrations to the database
+pnpm db:studio     # open Drizzle Studio (visual DB browser)
+```
+
+### 6. Run
 
 ```bash
 pnpm install
 pnpm run dev
 ```
+
+Open `http://localhost:3000`. Sign in with Google or Microsoft — the first user to sign in will be a `recruiter` by default.
+
+### 7. Grant admin access
+
+After your first sign-in, run this in the Supabase SQL Editor:
+
+```sql
+UPDATE users SET role = 'admin' WHERE email = 'your@email.com';
+```
+
+Then sign out and back in. The **▤ Admin** link will appear in the header.
 
 Open `http://localhost:3000`. Sign in with Google or Microsoft — the first user to sign in will be a `recruiter` by default.
 
@@ -74,55 +98,65 @@ Then sign out and back in. The **▤ Admin** link will appear in the header.
 
 ## Database
 
-```bash
-pnpm run db:generate   # generate migration files from schema changes
-pnpm run db:migrate    # apply migrations to the database
-pnpm run db:studio     # open Drizzle Studio (visual DB browser)
-```
+
 
 ## Project Structure
 
+drizzle/
 ```
 app/
   app.vue
-  assets/css/main.css
+  assets/scss/main.scss
   composables/
-    useAnalyser.ts                    # analysis state + Supabase-backed history
+    useAnalyser.ts         # analysis state + history
+    useComparison.ts       # candidate comparison
+    useJDGenerator.ts      # JD generator
+    usePDFExport.ts        # PDF export
+    useDateFormat.ts       # date formatting
   middleware/
-    auth.global.ts                    # redirect unauthenticated users to /auth/login
+    auth.global.ts         # redirect unauthenticated users to /auth/login
   pages/
-    index.vue                         # main analyser UI
-    auth/login.vue                    # OAuth sign-in page
-    admin/index.vue                   # admin dashboard
+    index.vue              # main analyser UI
+    compare.vue            # candidate comparison UI
+    jd-generator.vue       # JD generator UI
+    admin/index.vue        # admin dashboard
+    auth/login.vue         # OAuth sign-in page
   types/
-    index.ts                          # all interfaces (I) and types (T)
+    index.ts               # interfaces and types
 server/
   db/
-    schema.ts                         # Drizzle schema (users, analyses)
-    client.ts                         # Drizzle + postgres.js singleton
+    schema.ts              # Drizzle schema (users, analyses, comparisons)
+    client.ts              # Drizzle + postgres.js singleton
   middleware/
-    auth.ts                           # protect all /api/* routes
+    auth.ts                # protect all /api/* routes
   utils/
-    auth.ts                           # requireAuth / requireAdmin helpers
+    ai.ts                  # AI provider helpers
+    auth.ts                # requireAuth / requireAdmin helpers
   routes/
     auth/
-      google.get.ts                   # Google OAuth callback
-      microsoft.get.ts                # Microsoft OAuth callback
-      logout.get.ts                   # session clear + redirect
+      google.get.ts        # Google OAuth callback
+      microsoft.get.ts     # Microsoft OAuth callback
+      logout.get.ts        # session clear + redirect
   api/
-    analyse.post.ts                   # CV analysis — AI + persist to DB
-    extract-text.post.ts              # file text extraction
+    analyse.post.ts        # CV analysis — AI + persist to DB
+    compare.post.ts        # candidate comparison
+    generate-jd.post.ts    # JD generator
+    extract-text.post.ts   # file text extraction
     analyses/
-      index.get.ts                    # GET  /api/analyses        (user history)
-      [id].get.ts                     # GET  /api/analyses/:id    (full result)
-      [id].delete.ts                  # DELETE /api/analyses/:id  (soft-delete)
+      index.get.ts         # GET  /api/analyses        (user history)
+      [id].get.ts          # GET  /api/analyses/:id    (full result)
+      [id].delete.ts       # DELETE /api/analyses/:id  (soft-delete)
+    comparisons/
+      index.get.ts         # GET  /api/comparisons     (comparison history)
+      [id].get.ts          # GET  /api/comparisons/:id (full comparison)
+      [id].delete.ts       # DELETE /api/comparisons/:id (soft-delete)
     admin/
-      stats.get.ts                    # GET  /api/admin/stats     (admin only)
-drizzle/
-  0000_initial.sql                    # reference SQL for manual Supabase setup
-drizzle.config.ts                     # Drizzle Kit config
-```
+      stats.get.ts         # GET  /api/admin/stats     (admin only)
 
+  0000_initial.sql         # reference SQL for manual Supabase setup
+  0001_tiresome_excalibur.sql # migration example
+  drizzle.config.ts        # Drizzle Kit config
+```
 ## Tech Stack
 
 - **Nuxt 4** — `compatibilityVersion: 4`, `app/` directory convention
@@ -131,4 +165,59 @@ drizzle.config.ts                     # Drizzle Kit config
 - **Supabase** — managed PostgreSQL, connection pooling via pgBouncer
 - **@anthropic-ai/sdk**, **openai**, **@google/generative-ai** — AI providers
 - **mammoth** (DOCX), **pdf-parse** (PDF) — file text extraction
+- **jspdf** — PDF export
+- **drizzle-kit** — migrations & DB studio
+- **dotenv** — environment management
 - **DM Sans** + **Fraunces** + **DM Mono** — Google Fonts
+
+## API Endpoints
+
+### Analysis
+- `POST /api/analyse` — analyse a CV against a job description
+- `GET /api/analyses` — list user analyses
+- `GET /api/analyses/:id` — get full analysis result
+- `DELETE /api/analyses/:id` — archive/delete analysis
+
+### Comparison
+- `POST /api/compare` — compare 2–3 CVs for a role
+- `GET /api/comparisons` — list user comparisons
+- `GET /api/comparisons/:id` — get full comparison result
+- `DELETE /api/comparisons/:id` — archive/delete comparison
+
+### JD Generator
+- `POST /api/generate-jd` — generate job description from notes
+
+### File Extraction
+- `POST /api/extract-text` — extract text from `.txt`, `.pdf`, `.docx` file
+
+### Admin
+- `GET /api/admin/stats` — aggregate metrics (admin only)
+
+## Supported File Formats
+
+- `.txt`, `.pdf`, `.docx` for CV upload and extraction
+
+## PDF Export
+
+- Download formatted PDF of analysis results (uses jsPDF)
+
+## Comparison
+
+- Compare 2–3 candidates for the same role, see scores, strengths, gaps, integration ease, and AI recommendation
+
+## JD Generator
+
+- Generate inclusive job descriptions from recruiter notes, copy or use directly in the analyser
+
+## Environment & Setup
+
+- Requires Node.js >= 18 and pnpm >= 8
+- Environment variables managed via `.env` (see `.env.example`)
+- Uses `dotenv` for config loading
+
+## Testing
+
+- (To be implemented) Planned tests:
+  - Unit tests for composables and utils
+  - Integration tests for API routes
+  - End-to-end tests for main user flows

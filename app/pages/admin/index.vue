@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { IAdminStats } from '~/types/index';
+import { useDateFormat } from '~/composables/useDateFormat';
 
 // ── Guard — admin only ────────────────────────────────────────────────────────
 const { user } = useUserSession();
@@ -7,6 +8,8 @@ const { user } = useUserSession();
 if (!user.value || (user.value as ISessionUser)?.role !== 'admin') {
     await navigateTo('/');
 }
+
+const { formatDate } = useDateFormat();
 
 // ── Data ──────────────────────────────────────────────────────────────────────
 const { data: stats, pending, error } = await useFetch<IAdminStats>('/api/admin/stats');
@@ -32,10 +35,6 @@ function providerLabel(p: string): string {
     const labels: Record<string, string> = { anthropic: 'Claude', openai: 'GPT-4o', gemini: 'Gemini' };
 
     return labels[p] ?? p;
-}
-
-function formatDate(iso: string): string {
-    return new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
 }
 
 function totalAnalyses(): number {
@@ -65,8 +64,8 @@ function maxRecruiterCount(): number {
 }
 
 defineOptions({
-    name: 'AdminDashboard'
-})
+    name: 'AdminDashboard',
+});
 </script>
 
 <template>
@@ -74,6 +73,8 @@ defineOptions({
         <!-- Header -->
         <AppHeader tag="admin">
             <NuxtLink to="/" class="nav-btn">← Analyser</NuxtLink>
+            <NuxtLink to="/compare" class="nav-btn">Compare CVs</NuxtLink>
+            <NuxtLink to="/jd-generator" class="nav-btn">JD Generator</NuxtLink>
             <a href="/auth/logout" class="nav-btn">Sign out</a>
         </AppHeader>
 

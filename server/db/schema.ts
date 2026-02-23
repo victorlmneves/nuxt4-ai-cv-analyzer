@@ -46,3 +46,22 @@ export const analyses = pgTable('analyses', {
     createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
     isArchived: boolean('is_archived').notNull().default(false),
 });
+
+// ── Comparisons ───────────────────────────────────────────────────────────────
+// Each row is one multi-CV comparison session.
+// Scalar columns allow fast list queries; full IComparisonResult stored as JSONB.
+export const comparisons = pgTable('comparisons', {
+    id: uuid('id').primaryKey().defaultRandom(),
+    userId: uuid('user_id')
+        .notNull()
+        .references(() => users.id, { onDelete: 'cascade' }),
+
+    roleName: text('role_name').notNull(),
+    candidateCount: integer('candidate_count').notNull(),
+    provider: providerEnum('provider').notNull(),
+
+    result: jsonb('result').notNull(),
+
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+    isArchived: boolean('is_archived').notNull().default(false),
+});

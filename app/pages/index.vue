@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { useAnalyser } from '~/composables/useAnalyser';
+import { useJDGenerator } from '~/composables/useJDGenerator';
+import { usePDFExport } from '~/composables/usePDFExport';
 import type { TProvider, IHistoryEntry, ISkill } from '~/types/index';
 
 interface IExtendedUser {
@@ -120,13 +122,8 @@ function confidenceDot(confidence: 'low' | 'medium' | 'high'): string {
     return colors[confidence];
 }
 
-function formatDate(iso: string): string {
-    return new Date(iso).toLocaleDateString('en-GB', {
-        day: 'numeric',
-        month: 'short',
-        year: 'numeric',
-    });
-}
+import { useDateFormat } from '~/composables/useDateFormat';
+const { formatDate } = useDateFormat();
 
 function verdictColor(verdict: string): string {
     if (verdict === 'strong fit') {
@@ -189,9 +186,22 @@ function getFitScoreValue(key: 'technical' | 'experience' | 'softSkills'): numbe
 
 const providers = ['anthropic', 'openai', 'gemini'] as const;
 
+// ── JD Generator integration ──────────────────────────────────────────────────
+const { pendingJD } = useJDGenerator();
+
+onMounted(() => {
+    if (pendingJD.value) {
+        jobDescription.value = pendingJD.value;
+        pendingJD.value = '';
+    }
+});
+
+// ── PDF export ────────────────────────────────────────────────────────────────
+const { isExporting, exportAnalysis } = usePDFExport();
+
 defineOptions({
-    name: 'AnalysisPage'
-})
+    name: 'AnalysisPage',
+});
 </script>
 
 <template>
@@ -199,6 +209,8 @@ defineOptions({
         <!-- ── Header ──────────────────────────────────────────────── -->
         <AppHeader>
             <NuxtLink v-if="extendedUser?.role === 'admin'" to="/admin" class="nav-btn">▤ Admin</NuxtLink>
+            <NuxtLink to="/compare" class="nav-btn">Compare CVs</NuxtLink>
+            <NuxtLink to="/jd-generator" class="nav-btn">JD Generator</NuxtLink>
 
             <button class="nav-btn" :class="{ 'nav-btn--active': showHistory }" @click="showHistory = !showHistory">
                 History
@@ -392,6 +404,12 @@ defineOptions({
                 <div class="results-panel__header">
                     <button class="results-panel__back" @click="reset">← New analysis</button>
 
+                    <div class="results-panel__header-actions">
+                        <button class="nav-btn" :disabled="isExporting" @click="exportAnalysis(result)">
+                            {{ isExporting ? 'Exporting…' : '↓ Export PDF' }}
+                        </button>
+                    </div>
+
                     <div class="results-panel__meta">
                         <span class="results-panel__meta-provider font-mono">{{ providerLabel(result.provider) }}</span>
                         <span class="results-panel__meta-date font-mono">{{ formatDate(result.analysedAt) }}</span>
@@ -495,11 +513,7 @@ defineOptions({
                     </h3>
 
                     <div class="flags-list">
-                        <RedFlagItem
-                            v-for="(flag, i) in result.redFlags"
-                            :key="i"
-                            :flag="flag"
-                        />
+                        <RedFlagItem v-for="(flag, i) in result.redFlags" :key="i" :flag="flag" />
                     </div>
                 </div>
 
@@ -554,12 +568,7 @@ defineOptions({
                     </h3>
 
                     <div class="questions-list">
-                        <InterviewQuestion
-                            v-for="(q, i) in result.interviewQuestions"
-                            :key="i"
-                            :question="q"
-                            :index="i"
-                        />
+                        <InterviewQuestion v-for="(q, i) in result.interviewQuestions" :key="i" :question="q" :index="i" />
                     </div>
                 </div>
             </section>

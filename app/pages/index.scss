@@ -31,7 +31,9 @@
         line-height: 1;
         transition: color 0.15s;
 
-        &:hover { color: var(--red); }
+        &:hover {
+            color: var(--red);
+        }
     }
 }
 
@@ -42,7 +44,9 @@
     color: var(--ink-muted);
     padding: 0;
 
-    &--danger:hover { color: var(--red); }
+    &--danger:hover {
+        color: var(--red);
+    }
 }
 
 /* ── History sidebar ─────────────────────────────────────────── */
@@ -83,10 +87,14 @@
         font-size: 1rem;
         color: var(--ink-muted);
 
-        &:hover { color: var(--ink); }
+        &:hover {
+            color: var(--ink);
+        }
     }
 
-    &__loading { padding: 0.5rem 0; }
+    &__loading {
+        padding: 0.5rem 0;
+    }
 
     &__skeleton-row {
         display: flex;
@@ -110,8 +118,14 @@
     background-size: 200% auto;
     animation: shimmer 1.4s linear infinite;
 
-    &--name { height: 13px; width: 70%; }
-    &--meta { height: 10px; width: 45%; }
+    &--name {
+        height: 13px;
+        width: 70%;
+    }
+    &--meta {
+        height: 10px;
+        width: 45%;
+    }
 }
 
 /* ── History list ────────────────────────────────────────────── */
@@ -134,7 +148,9 @@
             background: var(--paper-warm);
 
             .history-list__edit,
-            .history-list__delete { opacity: 1; }
+            .history-list__delete {
+                opacity: 1;
+            }
         }
     }
 
@@ -184,8 +200,12 @@
         padding: 0.2rem;
     }
 
-    &__edit:hover { color: var(--accent); }
-    &__delete:hover { color: var(--red); }
+    &__edit:hover {
+        color: var(--accent);
+    }
+    &__delete:hover {
+        color: var(--red);
+    }
 }
 
 /* ── Sidebar transitions ─────────────────────────────────────── */
@@ -231,7 +251,9 @@
     flex-direction: column;
     gap: 2rem;
 
-    &__intro { max-width: 600px; }
+    &__intro {
+        max-width: 600px;
+    }
 
     &__title {
         font-size: 2.5rem;
@@ -240,7 +262,10 @@
         color: var(--ink);
         margin-bottom: 0.75rem;
 
-        em { color: var(--accent); font-style: italic; }
+        em {
+            color: var(--accent);
+            font-style: italic;
+        }
     }
 
     &__subtitle {
@@ -254,7 +279,9 @@
         grid-template-columns: 1fr 1fr;
         gap: 1.5rem;
 
-        @media (width <= 700px) { grid-template-columns: 1fr; }
+        @media (width <= 700px) {
+            grid-template-columns: 1fr;
+        }
     }
 }
 
@@ -279,7 +306,10 @@
         color: var(--ink-muted);
     }
 
-    &__tabs { display: flex; gap: 0.25rem; }
+    &__tabs {
+        display: flex;
+        gap: 0.25rem;
+    }
 }
 
 /* ── Tab button ──────────────────────────────────────────────── */
@@ -314,7 +344,9 @@
     font-weight: 300;
     outline: none;
 
-    &::placeholder { color: var(--ink-muted); }
+    &::placeholder {
+        color: var(--ink-muted);
+    }
 }
 
 /* ── Dropzone ────────────────────────────────────────────────── */
@@ -326,7 +358,9 @@
     justify-content: center;
     transition: background 0.15s;
 
-    &--drag-over { background: var(--accent-pale); }
+    &--drag-over {
+        background: var(--accent-pale);
+    }
 
     &__file-input {
         position: absolute;
@@ -388,7 +422,9 @@
         transition: all 0.15s;
         border-right: 1px solid var(--paper-dark);
 
-        &:last-child { border-right: none; }
+        &:last-child {
+            border-right: none;
+        }
 
         &--active {
             background: var(--ink);
@@ -397,19 +433,10 @@
     }
 
     &__submit {
+        @include primary-btn;
         margin-left: auto;
         padding: 0.65rem 1.5rem;
-        background: var(--accent);
-        color: #fff;
-        border: none;
-        border-radius: var(--radius);
         font-size: 0.875rem;
-        cursor: pointer;
-        transition: opacity 0.15s;
-        font-family: 'DM Sans', sans-serif;
-
-        &:disabled { opacity: 0.35; cursor: not-allowed; }
-        &:not(:disabled):hover { opacity: 0.88; }
     }
 }
 
@@ -462,8 +489,13 @@
     @include bar-track(3px, var(--paper-dark));
     margin-bottom: 0.5rem;
 
-    &__fill { @include bar-fill(var(--accent), 0.3s); }
-    &__label { font-size: 0.7rem; color: var(--ink-muted); }
+    &__fill {
+        @include bar-fill(var(--accent), 0.3s);
+    }
+    &__label {
+        font-size: 0.7rem;
+        color: var(--ink-muted);
+    }
 }
 
 /* ── Results ─────────────────────────────────────────────────── */
@@ -484,7 +516,9 @@
         color: var(--ink-muted);
         padding: 0;
 
-        &:hover { color: var(--ink); }
+        &:hover {
+            color: var(--ink);
+        }
     }
 
     &__meta {
@@ -663,7 +697,9 @@
     grid-template-columns: 1fr 1fr;
     gap: 1.5rem;
 
-    @media (width <= 600px) { grid-template-columns: 1fr; }
+    @media (width <= 600px) {
+        grid-template-columns: 1fr;
+    }
 }
 
 /* ── Bullet list ─────────────────────────────────────────────── */
@@ -689,8 +725,12 @@
         }
     }
 
-    &--green li::before { color: var(--green); }
-    &--red li::before { color: var(--red); }
+    &--green li::before {
+        color: var(--green);
+    }
+    &--red li::before {
+        color: var(--red);
+    }
 }
 
 /* ── Red flags ───────────────────────────────────────────────── */

@@ -1,11 +1,14 @@
 <script setup lang="ts">
-withDefaults(defineProps<{
-    value: string | number;
-    label: string;
-    valueColor?: string;
-}>(), {
-    valueColor: undefined,
-});
+withDefaults(
+    defineProps<{
+        value: string | number;
+        label: string;
+        valueColor?: string;
+    }>(),
+    {
+        valueColor: undefined,
+    }
+);
 </script>
 
 <template>

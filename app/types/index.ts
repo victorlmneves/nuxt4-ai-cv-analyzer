@@ -1,5 +1,6 @@
 // ── Provider ──────────────────────────────────────────────────────────────────
 export type TProvider = 'anthropic' | 'openai' | 'gemini';
+export type TIntegrationEase = 'easy' | 'moderate' | 'challenging';
 
 // ── Input ─────────────────────────────────────────────────────────────────────
 export interface IAnalysisInput {
@@ -85,71 +86,8 @@ export interface IAnalysisResult {
     jobDescription?: string;
 }
 
-// ── History Entry ─────────────────────────────────────────────────────────────
-export interface IHistoryEntry {
-    id: string;
-    result: IAnalysisResult;
-    candidateName: string;
-    roleName: string;
-    createdAt: string;
-}
-
-export interface IRedFlag {
-    title: string;
-    description: string;
-    severity: TRedFlagSeverity;
-}
-
-// ── Soft Skills ───────────────────────────────────────────────────────────────
-export interface ISoftSkill {
-    name: string;
-    evidence: string;
-    confidence: 'low' | 'medium' | 'high';
-}
-
-// ── Interview Questions ───────────────────────────────────────────────────────
-export interface IInterviewQuestion {
-    question: string;
-    category: TQuestionCategory;
-    rationale: string;
-    targetSkill: string;
-}
-
-// ── Fit Score ─────────────────────────────────────────────────────────────────
-export interface IFitScore {
-    overall: number;
-    technical: number;
-    experience: number;
-    softSkills: number;
-    verdict: 'strong fit' | 'good fit' | 'partial fit' | 'weak fit';
-    summary: string;
-}
-
-// ── Analysis Result ───────────────────────────────────────────────────────────
-export interface ICandidateProfile {
-    name: string | null;
-    currentRole: string | null;
-    totalExperience: string | null;
-    location: string | null;
-    education: string | null;
-}
-
-export interface IAnalysisResult {
-    candidate: ICandidateProfile;
-    fitScore: IFitScore;
-    techStack: ITechStack;
-    softSkills: ISoftSkill[];
-    redFlags: IRedFlag[];
-    interviewQuestions: IInterviewQuestion[];
-    strengths: string[];
-    gaps: string[];
-    provider: TProvider;
-    analysedAt: string;
-}
-
-// ── History Entry ─────────────────────────────────────────────────────────────
-// Matches the scalar columns returned by GET /api/analyses (no full JSONB result).
-// The full IAnalysisResult is fetched separately via GET /api/analyses/:id.
+// ── History Entry — scalar columns (no JSONB) ──────────────────────────────
+// Matches GET /api/analyses list. Full result loaded via GET /api/analyses/:id.
 export interface IHistoryEntry {
     id: string;
     candidateName: string;
@@ -163,6 +101,58 @@ export interface IHistoryEntry {
     redFlagCount: number;
     provider: TProvider;
     createdAt: string;
+}
+
+// ── Comparison ────────────────────────────────────────────────────────────────
+export interface IComparisonCandidate {
+    analysisId: string;
+    name: string;
+    currentRole: string | null;
+    overallScore: number;
+    technicalScore: number;
+    experienceScore: number;
+    softSkillsScore: number;
+    verdict: IFitScore['verdict'];
+    redFlagCount: number;
+    topStrengths: string[];
+    topGaps: string[];
+    techStackHighlights: string[];
+    integrationEase: TIntegrationEase;
+    integrationRationale: string;
+}
+
+export interface IComparisonResult {
+    candidates: IComparisonCandidate[];
+    roleName: string;
+    winner: string;
+    rankedOrder: string[];
+    recommendation: string;
+    provider: TProvider;
+    comparedAt: string;
+    jobDescription?: string;
+}
+
+export interface IComparisonHistoryEntry {
+    id: string;
+    roleName: string;
+    candidateCount: number;
+    provider: TProvider;
+    createdAt: string;
+}
+
+// ── JD Generator ─────────────────────────────────────────────────────────────
+export interface IJDSections {
+    summary: string;
+    responsibilities: string;
+    requirements: string;
+    niceToHave: string;
+    offer: string;
+}
+
+export interface IGeneratedJD {
+    title: string;
+    fullText: string;
+    sections: IJDSections;
 }
 
 // ── Admin stats ───────────────────────────────────────────────────────────────

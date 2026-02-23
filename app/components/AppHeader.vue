@@ -1,9 +1,12 @@
 <script setup lang="ts">
-withDefaults(defineProps<{
-    tag?: string;
-}>(), {
-    tag: 'by recruitr',
-});
+withDefaults(
+    defineProps<{
+        tag?: string;
+    }>(),
+    {
+        tag: 'by recruitr',
+    }
+);
 </script>
 
 <template>

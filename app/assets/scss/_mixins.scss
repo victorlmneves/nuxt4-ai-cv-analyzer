@@ -55,6 +55,34 @@
     transition: color 0.15s;
 }
 
+// ── Outline button ───────────────────────────────────────────────────────────
+@mixin outline-btn {
+    background: transparent;
+    border: 1px solid var(--paper-dark);
+    border-radius: var(--radius);
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    transition: border-color 0.15s;
+
+    &:hover {
+        border-color: var(--ink-soft);
+    }
+}
+
+// ── Primary button ───────────────────────────────────────────────────────────
+@mixin primary-btn {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius);
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    transition: opacity 0.15s;
+
+    &:not(:disabled):hover { opacity: 0.88; }
+    &:disabled { opacity: 0.45; cursor: not-allowed; }
+}
+
 // ── Text truncate ────────────────────────────────────────────────────────────
 @mixin truncate {
     white-space: nowrap;

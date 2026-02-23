@@ -11,7 +11,7 @@ const hasError = computed(() => route.query.error === 'oauth');
 
 defineOptions({
     name: 'LoginPage',
-})
+});
 </script>
 
 <template>

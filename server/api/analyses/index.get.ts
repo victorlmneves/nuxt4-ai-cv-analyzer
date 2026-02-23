@@ -24,6 +24,7 @@ export default defineEventHandler(async (event) => {
             redFlagCount: analyses.redFlagCount,
             provider: analyses.provider,
             createdAt: analyses.createdAt,
+            status: analyses.status,
         })
         .from(analyses)
         .where(and(eq(analyses.userId, sessionUser.id), eq(analyses.isArchived, false)))

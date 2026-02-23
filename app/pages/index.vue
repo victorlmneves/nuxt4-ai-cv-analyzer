@@ -209,6 +209,7 @@ defineOptions({
         <!-- ── Header ──────────────────────────────────────────────── -->
         <AppHeader>
             <NuxtLink v-if="extendedUser?.role === 'admin'" to="/admin" class="nav-btn">▤ Admin</NuxtLink>
+            <NuxtLink to="/pipeline" class="nav-btn">Pipeline</NuxtLink>
             <NuxtLink to="/compare" class="nav-btn">Compare CVs</NuxtLink>
             <NuxtLink to="/jd-generator" class="nav-btn">JD Generator</NuxtLink>
 

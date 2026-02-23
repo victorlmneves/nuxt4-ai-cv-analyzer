@@ -40,6 +40,15 @@ export const analyses = pgTable('analyses', {
     redFlagCount: integer('red_flag_count').notNull().default(0),
     provider: providerEnum('provider').notNull(),
 
+    // Kanban pipeline status
+    status: text('status').notNull().default('in_process'), // in_process, interview, offer, placed, rejected
+
+    // Notes/collaboration
+    notes: jsonb('notes').notNull().default([]), // array of objects { userId, text, createdAt }
+
+    // Cultural fit input
+    companyCulture: text('company_culture'),
+
     // Full AI result — parsed when viewing a single analysis
     result: jsonb('result').notNull(),
 

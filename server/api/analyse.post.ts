@@ -76,6 +76,9 @@ export default defineEventHandler(async (event) => {
             redFlagCount: analysisResult.redFlags.length,
             provider: analysisResult.provider,
             result: analysisResult,
+            status: 'in_process', // default pipeline status
+            notes: [], // default empty notes array
+            companyCulture: null, // optional, can be null
         })
         .returning({ id: analyses.id });
 

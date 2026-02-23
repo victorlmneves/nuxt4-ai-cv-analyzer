@@ -8,7 +8,7 @@
 /* ── Main ────────────────────────────────────────────────────── */
 .compare-main {
     flex: 1;
-    max-width: 1100px;
+    max-width: var(--width-app-max);
     margin: 0 auto;
     padding: 2.5rem 2rem;
     width: 100%;

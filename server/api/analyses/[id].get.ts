@@ -1,10 +1,21 @@
+// PATCH /api/analyses/:id — update status (kanban)
+import { eq, and } from 'drizzle-orm';
 import { useDb } from '~~/server/db/client';
 import { analyses } from '~~/server/db/schema';
-import { eq, and } from 'drizzle-orm';
 import { requireAuth } from '~~/server/utils/auth';
 
 // ── GET /api/analyses/:id ─────────────────────────────────────────────────────
 export default defineEventHandler(async (event) => {
+    if (event.req.method === 'PATCH') {
+        const id = event.context.params.id;
+        const body = await readBody(event);
+        const db = useDb();
+
+        await db.update(analyses).set({ status: body.status }).where(eq(analyses.id, id));
+
+        return { success: true };
+    }
+
     const sessionUser = await requireAuth(event);
     const id = getRouterParam(event, 'id');
 

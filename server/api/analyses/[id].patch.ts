@@ -1,7 +1,6 @@
 import { useDb } from '~~/server/db/client';
 import { analyses } from '~~/server/db/schema';
 import { eq } from 'drizzle-orm';
-// import { requireAuth } from '~~/server/utils/auth';
 
 export default defineEventHandler(async (event) => {
     const db = useDb();

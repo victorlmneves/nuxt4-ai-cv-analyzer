@@ -63,6 +63,27 @@ function maxRecruiterCount(): number {
     return Math.max(...(stats.value?.byRecruiter.map((r) => r.analysisCount) ?? [1]), 1);
 }
 
+// Placement rate helpers
+function strongFitPlacementRate(): string {
+    const s = stats.value?.strongFitPlacement;
+
+    if (!s || s.rate == null) {
+        return '—';
+    }
+
+    return (s.rate * 100).toFixed(0) + '%';
+}
+
+function strongFitPlacementTooltip(): string {
+    const s = stats.value?.strongFitPlacement;
+
+    if (!s) {
+        return '';
+    }
+
+    return `Placed: ${s.placed} / ${s.total} strong fit candidates`;
+}
+
 defineOptions({
     name: 'AdminDashboard',
 });
@@ -102,6 +123,12 @@ defineOptions({
                         :value="verdictCount('strong fit') + verdictCount('good fit')"
                         label="Strong / Good fits"
                         value-color="var(--green)"
+                    />
+                    <KpiCard
+                        :value="strongFitPlacementRate()"
+                        label="Strong fit placement rate"
+                        value-color="var(--accent)"
+                        :tooltip="strongFitPlacementTooltip()"
                     />
                 </div>
 

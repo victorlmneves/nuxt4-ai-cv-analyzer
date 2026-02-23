@@ -181,4 +181,15 @@ export interface IAdminStats {
         createdAt: string;
         recruiterName: string;
     }>;
+    strongFitPlacement: {
+        total: number;
+        placed: number;
+        rate: number | null;
+        byProvider: Array<{
+            provider: string;
+            total: number;
+            placed: number;
+            rate: number | null;
+        }>;
+    };
 }

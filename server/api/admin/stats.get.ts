@@ -73,11 +73,59 @@ export default defineEventHandler(async (event) => {
         .orderBy(sql`${analyses.createdAt} desc`)
         .limit(10);
 
+    // Placement rate for 'strong fit' candidates
+    const [strongFitTotal] = await db
+        .select({ count: count(analyses.id) })
+        .from(analyses)
+        .where(sql`${analyses.isArchived} = false AND ${analyses.verdict} = 'strong fit'`);
+
+    const [strongFitPlaced] = await db
+        .select({ count: count(analyses.id) })
+        .from(analyses)
+        .where(sql`${analyses.isArchived} = false AND ${analyses.verdict} = 'strong fit' AND ${analyses.status} = 'placed'`);
+
+    // Placement rate by provider for 'strong fit'
+    const strongFitByProvider = await db
+        .select({
+            provider: analyses.provider,
+            total: count(analyses.id),
+        })
+        .from(analyses)
+        .where(sql`${analyses.isArchived} = false AND ${analyses.verdict} = 'strong fit'`)
+        .groupBy(analyses.provider);
+
+    const strongFitPlacedByProvider = await db
+        .select({
+            provider: analyses.provider,
+            placed: count(analyses.id),
+        })
+        .from(analyses)
+        .where(sql`${analyses.isArchived} = false AND ${analyses.verdict} = 'strong fit' AND ${analyses.status} = 'placed'`)
+        .groupBy(analyses.provider);
+
+    // Merge provider breakdowns
+    const placementRateByProvider = strongFitByProvider.map((row) => {
+        const placedRow = strongFitPlacedByProvider.find((p) => p.provider === row.provider);
+
+        return {
+            provider: row.provider,
+            total: row.total,
+            placed: placedRow?.placed ?? 0,
+            rate: row.total > 0 ? (placedRow?.placed ?? 0) / row.total : null,
+        };
+    });
+
     return {
         totals,
         byVerdict,
         byProvider,
         byRecruiter,
         recent,
+        strongFitPlacement: {
+            total: strongFitTotal?.count ?? 0,
+            placed: strongFitPlaced?.count ?? 0,
+            rate: (strongFitTotal?.count ?? 0) > 0 ? (strongFitPlaced?.count ?? 0) / (strongFitTotal?.count ?? 1) : null,
+            byProvider: placementRateByProvider,
+        },
     };
 });

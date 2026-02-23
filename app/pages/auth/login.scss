@@ -7,7 +7,7 @@
     align-items: center;
     justify-content: center;
     background: var(--paper);
-    padding: 2rem;
+    padding: var(--space-4xl);
 }
 
 /* ── Login card ──────────────────────────────────────────────── */
@@ -16,7 +16,7 @@
     width: 100%;
     max-width: 400px;
     box-shadow: var(--shadow-lg);
-    padding: 3rem 2.5rem;
+    padding: var(--space-6xl) var(--space-5xl);
     text-align: center;
     animation: fade-up 0.4s ease both;
 
@@ -24,16 +24,16 @@
         display: flex;
         align-items: baseline;
         justify-content: center;
-        gap: 0.4rem;
-        margin-bottom: 2rem;
+        gap: var(--space-sm);
+        margin-bottom: var(--space-4xl);
     }
 
     &__title {
-        font-size: 1.75rem;
+        font-size: var(--font-3xl);
         font-weight: 300;
         line-height: 1.25;
         color: var(--ink);
-        margin-bottom: 0.75rem;
+        margin-bottom: var(--space-lg);
 
         em {
             color: var(--accent);
@@ -42,25 +42,25 @@
     }
 
     &__sub {
-        font-size: 0.875rem;
+        font-size: var(--font-md);
         color: var(--ink-muted);
         line-height: 1.6;
-        margin-bottom: 2rem;
+        margin-bottom: var(--space-4xl);
     }
 
     &__error {
-        font-size: 0.825rem;
+        font-size: var(--font-sm);
         color: var(--red);
         background: var(--red-pale);
         border: 1px solid var(--red);
         border-radius: var(--radius);
-        padding: 0.6rem 1rem;
-        margin-bottom: 1.25rem;
+        padding: var(--space-md) var(--space-xl);
+        margin-bottom: var(--space-2xl);
     }
 
     &__footer {
-        margin-top: 1.5rem;
-        font-size: 0.72rem;
+        margin-top: var(--space-3xl);
+        font-size: var(--font-xs);
         color: var(--ink-muted);
         line-height: 1.6;
     }
@@ -69,13 +69,13 @@
 /* ── Brand (inside login card) ───────────────────────────────── */
 .brand {
     &__mark {
-        font-size: 1.5rem;
+        font-size: var(--font-2xl);
         font-weight: 500;
         color: var(--accent);
     }
 
     &__name {
-        font-size: 1.1rem;
+        font-size: var(--font-xl);
         font-weight: 300;
         color: var(--ink-soft);
     }
@@ -85,7 +85,7 @@
 .oauth-buttons {
     display: flex;
     flex-direction: column;
-    gap: 0.75rem;
+    gap: var(--space-lg);
 }
 
 .oauth-btn {
@@ -93,10 +93,10 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 0.75rem;
+    gap: var(--space-lg);
     width: 100%;
-    padding: 0.75rem 1.25rem;
-    font-size: 0.9rem;
+    padding: var(--space-lg) var(--space-xl);
+    font-size: var(--font-lg);
     font-weight: 500;
     color: var(--ink);
     text-decoration: none;

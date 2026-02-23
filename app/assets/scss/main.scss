@@ -23,6 +23,48 @@
     --radius: 3px;
     --shadow: 0 1px 3px rgb(15 14 13 / 8%), 0 4px 16px rgb(15 14 13 / 4%);
     --shadow-lg: 0 2px 8px rgb(15 14 13 / 12%), 0 12px 40px rgb(15 14 13 / 8%);
+
+    /* Spacing */
+    --space-xs: 0.2rem;
+    --space-sm: 0.3rem;
+    --space-md: 0.5rem;
+    --space-lg: 0.75rem;
+    --space-xl: 1rem;
+    --space-2xl: 1.25rem;
+    --space-3xl: 1.5rem;
+    --space-4xl: 2rem;
+    --space-5xl: 2.5rem;
+    --space-6xl: 3rem;
+    --space-7xl: 4rem;
+
+    /* Font sizes */
+    --font-xs: 0.65rem;
+    --font-sm: 0.75rem;
+    --font-md: 0.875rem;
+    --font-lg: 1rem;
+    --font-xl: 1.25rem;
+    --font-2xl: 1.5rem;
+    --font-3xl: 2rem;
+    --font-4xl: 2.5rem;
+    --font-5xl: 3rem;
+    --font-6xl: 4rem;
+
+    /* Widths */
+    --width-sidebar: 340px;
+    --width-app-max: 1100px;
+    --width-card-max: 600px;
+    --width-jd-card-max: 560px;
+    --width-progress-bar: 280px;
+
+    /* Heights */
+    --height-header: 60px;
+    --height-avatar: 60px;
+    --height-skeleton-name: 13px;
+    --height-skeleton-meta: 10px;
+    --height-progress-bar: 4px;
+    --height-bar-track: 3px;
+    --height-bar-track-lg: 6px;
+    --height-soft-skill-dot: 7px;
 }
 
 *,
@@ -85,18 +127,31 @@ body {
 }
 
 @keyframes fade-in {
-    from { opacity: 0; }
-    to { opacity: 1; }
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
 }
 
 @keyframes shimmer {
-    0% { background-position: -200% center; }
-    100% { background-position: 200% center; }
+    0% {
+        background-position: -200% center;
+    }
+    100% {
+        background-position: 200% center;
+    }
 }
 
 @keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.4; }
+    0%,
+    100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.4;
+    }
 }
 
 .animate-fade-up {

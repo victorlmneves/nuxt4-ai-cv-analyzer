@@ -1,0 +1,118 @@
+@use '~/assets/scss/mixins' as *;
+
+/* ── Login shell ─────────────────────────────────────────────── */
+.login-shell {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--paper);
+    padding: 2rem;
+}
+
+/* ── Login card ──────────────────────────────────────────────── */
+.login-card {
+    @include card;
+    width: 100%;
+    max-width: 400px;
+    box-shadow: var(--shadow-lg);
+    padding: 3rem 2.5rem;
+    text-align: center;
+    animation: fade-up 0.4s ease both;
+
+    &__brand {
+        display: flex;
+        align-items: baseline;
+        justify-content: center;
+        gap: 0.4rem;
+        margin-bottom: 2rem;
+    }
+
+    &__title {
+        font-size: 1.75rem;
+        font-weight: 300;
+        line-height: 1.25;
+        color: var(--ink);
+        margin-bottom: 0.75rem;
+
+        em {
+            color: var(--accent);
+            font-style: italic;
+        }
+    }
+
+    &__sub {
+        font-size: 0.875rem;
+        color: var(--ink-muted);
+        line-height: 1.6;
+        margin-bottom: 2rem;
+    }
+
+    &__error {
+        font-size: 0.825rem;
+        color: var(--red);
+        background: var(--red-pale);
+        border: 1px solid var(--red);
+        border-radius: var(--radius);
+        padding: 0.6rem 1rem;
+        margin-bottom: 1.25rem;
+    }
+
+    &__footer {
+        margin-top: 1.5rem;
+        font-size: 0.72rem;
+        color: var(--ink-muted);
+        line-height: 1.6;
+    }
+}
+
+/* ── Brand (inside login card) ───────────────────────────────── */
+.brand {
+    &__mark {
+        font-size: 1.5rem;
+        font-weight: 500;
+        color: var(--accent);
+    }
+
+    &__name {
+        font-size: 1.1rem;
+        font-weight: 300;
+        color: var(--ink-soft);
+    }
+}
+
+/* ── OAuth buttons ───────────────────────────────────────────── */
+.oauth-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.oauth-btn {
+    @include card;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    width: 100%;
+    padding: 0.75rem 1.25rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--ink);
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.15s;
+    box-shadow: 0 1px 3px rgb(0 0 0 / 8%);
+    font-family: 'DM Sans', sans-serif;
+
+    &:hover {
+        border-color: var(--ink-soft);
+        box-shadow: 0 2px 8px rgb(0 0 0 / 10%);
+    }
+
+    &__icon {
+        width: 18px;
+        height: 18px;
+        flex-shrink: 0;
+    }
+}
